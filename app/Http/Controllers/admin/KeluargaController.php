@@ -13,7 +13,7 @@ use Illuminate\Validation\Rule;
 
 class KeluargaController extends Controller
 {
-    public function index($nama_RT)
+    public function index(Request $request, $nama_RT)
     {
         $admin = Auth::user();
 
@@ -22,7 +22,7 @@ class KeluargaController extends Controller
             ->orderByRaw('LENGTH(alamat), alamat ASC')
             ->get();
 
-        $rts = RT::all();
+        $rts = RT::orderBy('nama_RT', 'asc')->get();
 
         $users = User::whereIn('no_kk_keluarga', $keluargas->pluck('no_kk'))
             ->get();
@@ -51,7 +51,7 @@ class KeluargaController extends Controller
         ActivityLog::create([
             'user_id'      => auth()->id(),
             'activity'     => 'create',
-            'description'  => "Membuat keluarga dengan no_kk {$keluarga->no_kk}",
+            'description'  => "Membuat keluarga dengan No KK {$keluarga->no_kk}",
             'target_table' => 'keluargas',
             'target_id'    => $keluarga->no_kk,
             'performed_at' => now(),
@@ -87,7 +87,7 @@ class KeluargaController extends Controller
         ActivityLog::create([
             'user_id'      => auth()->id(),
             'activity'     => 'update',
-            'description'  => "Mengubah data keluarga dengan no_kk {$keluargas->no_kk}",
+            'description'  => "Mengubah data keluarga dari No KK {$keluargas->no_kk}",
             'target_table' => 'keluargas',
             'target_id'    => $keluargas->no_kk,
             'performed_at' => now(),
@@ -117,7 +117,7 @@ class KeluargaController extends Controller
         ActivityLog::create([
             'user_id'      => auth()->id(),
             'activity'     => 'create',
-            'description'  => "Membuat akun keluarga {$keluargas->nama_keluarga} dengan Email {$users->email}",
+            'description'  => "Membuat akun untuk keluarga {$keluargas->nama_keluarga} dengan Email {$users->email}",
             'target_table' => 'users',
             'target_id'    => $users->id,
             'performed_at' => now(),
@@ -146,7 +146,7 @@ class KeluargaController extends Controller
         ActivityLog::create([
             'user_id'      => auth()->id(),
             'activity'     => 'update',
-            'description'  => "Mengubah akun keluarga {$keluargas->nama_keluarga} dengan Email {$user->email}",
+            'description'  => "Mengubah akun dari keluarga {$keluargas->nama_keluarga} dengan Email {$user->email}",
             'target_table' => 'users',
             'target_id'    => $user->id,
             'performed_at' => now(),
@@ -156,8 +156,32 @@ class KeluargaController extends Controller
             ->with('success', 'Akun keluarga berhasil diperbarui.');
     }
 
-    public function destroy(Keluarga $keluarga)
+    public function destroy($nama_RT, $warga)
     {
-        //
+        $keluarga = Keluarga::where('no_kk', $warga)->firstOrFail();
+
+        if ($keluarga) {
+
+            if ($keluarga->user) {
+                $keluarga->user->delete();
+            }
+
+            $keluarga->delete();
+
+            ActivityLog::create([
+                'user_id'      => auth()->id(),
+                'activity'     => 'delete',
+                'description'  => "Menghapus data keluarga dari No KK {$keluarga->no_kk}",
+                'target_table' => 'keluargas',
+                'target_id'    => $keluarga->no_kk,
+                'performed_at' => now(),
+            ]);
+
+            return redirect()->route('admin.warga.index', ['nama_RT' => $nama_RT])
+                ->with('success', 'Data berhasil dihapus.');
+        }
+
+        return redirect()->route('admin.warga.index', ['nama_RT' => $nama_RT])
+            ->with('error', 'Data tidak ditemukan.');
     }
 }

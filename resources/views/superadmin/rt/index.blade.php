@@ -1,4 +1,4 @@
-@extends('layouts.navbar')
+@extends('layouts.app')
 
 @section('title', 'Super Admin Add RT')
 
@@ -22,7 +22,7 @@
         }
     </style>
 
-    <div class="main-panel">
+    <div class="main-panel mt-4">
         <div class="content-wrapper">
             <div class="row">
                 <div class="col-lg-4 grid-margin stretch-card">
@@ -188,9 +188,9 @@
 
                                                 <div class="modal-body">
                                                     <div class="mb-3">
-                                                        <label class="form-label">Dibuat/Diubah oleh : 
+                                                        <label class="form-label">Dibuat/Diubah oleh :
                                                             <b>{{ $createLog?->activity ?? 'Tidak Diketahui' }}</b>
-                                                            By 
+                                                            By
                                                             <b>{{ $createLog?->user?->name ?? 'Tidak Diketahui' }}</b>
                                                         </label>
                                                     </div>
@@ -205,12 +205,12 @@
                                                         </label>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div class="modal-body">
                                                     <div class="mb-3">
-                                                        <label class="form-label">Diubah oleh : 
+                                                        <label class="form-label">Diubah oleh :
                                                             <b>{{ $updateLog?->activity ?? 'Belum diedit' }}</b>
-                                                            By 
+                                                            By
                                                             <b>{{ $updateLog?->user?->name ?? 'Belum diedit' }}</b>
                                                         </label>
                                                     </div>

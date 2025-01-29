@@ -1,9 +1,12 @@
-@extends('layouts.navbar')
+@extends('layouts.app')
 
 @section('title', 'Admin Data Keluarga dan Pembayaran')
 
 @section('content')
 
+    <?php
+    use Carbon\Carbon;
+    ?>
 
     <style>
         .btn-outline-info.dropdown-toggle::after {
@@ -23,18 +26,44 @@
         }
     </style>
 
-    <div class="main-panel">
+    <div class="main-panel mt-4">
         <div class="content-wrapper">
             <div class="row">
                 <div class="col-lg-12 grid-margin stretch-card">
                     <div class="card card-tale">
                         <div class="card-body">
+
+                            <style>
+                                .form-sample {
+                                    margin: 0 auto;
+                                    max-width: 600px;
+                                }
+
+                                .form-group h4 {
+                                    color: black;
+                                    margin-bottom: 10px;
+                                    /* Jarak antara judul dan elemen form */
+                                }
+
+                                .form-select {
+                                    width: 100%;
+                                    /* Pastikan dropdown mengikuti lebar penuh */
+                                }
+                            </style>
+
+
                             <button type="submit" class="add btn btn-primary todo-list-add-btn" data-bs-toggle="modal"
                                 data-bs-target="#createKeluargaModal" id="add-task">Add
                             </button>
 
                             <div class="modal fade" id="createKeluargaModal" tabindex="-1"
                                 aria-labelledby="createKeluargaModalLabel" aria-hidden="true">
+
+                                @if (session('success'))
+                                    <div class="alert alert-success">
+                                        {{ session('success') }}
+                                    </div>
+                                @endif
 
                                 @if (session('error'))
                                     <script>
@@ -181,6 +210,19 @@
 
                                                             <button class="dropdown-item" data-bs-toggle="modal"
                                                                 data-bs-target="#activityLog-{{ $data->no_kk }}">Aktifitas</button>
+
+                                                            <div class="dropdown-divider"></div>
+
+                                                            <form
+                                                                action="{{ route('admin.warga.destroy', ['nama_RT' => $nama_RT, 'warga' => $data->no_kk]) }}"
+                                                                method="POST"
+                                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit"
+                                                                    class="dropdown-item">Hapus</button>
+                                                            </form>
+
                                                         </div>
                                                     </div>
                                                 </td>
@@ -270,7 +312,7 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <form
-                                                        action="{{ route('admin.warga.updateAkun', ['nama_RT' => $nama_RT,  'no_kk_keluarga' => $data->no_kk]) }}"
+                                                        action="{{ route('admin.warga.updateAkun', ['nama_RT' => $nama_RT, 'no_kk_keluarga' => $data->no_kk]) }}"
                                                         method="POST">
                                                         @csrf
                                                         @method('PUT')
@@ -320,7 +362,8 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content bg-dark">
                                                 <div class="modal-header">
-                                                    <h3 class="modal-title text-warning" id="activityLogLabel-{{ $data->no_kk }}">
+                                                    <h3 class="modal-title text-warning"
+                                                        id="activityLogLabel-{{ $data->no_kk }}">
                                                         Aktifitas CRUD Keluarga {{ $data->nama_keluarga }}
                                                     </h3>
                                                 </div>

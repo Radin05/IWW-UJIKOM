@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,14 +26,13 @@ class RT extends Model
     {
         return $this->hasMany(ActivityLog::class, 'target_id', 'id');
     }
-    
+
     protected static function boot()
     {
         parent::boot();
 
-        static::deleting(function ($rt) {
-            // Jangan hapus log di ActivityLog, update target_id ke null
-            ActivityLog::where('target_id', $rt->id)
+        static::deleting(function ($model) {
+            ActivityLog::where('target_id', $model->id)
                 ->where('target_table', 'rts')
                 ->update(['target_id' => null]);
         });

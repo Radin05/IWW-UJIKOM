@@ -6,102 +6,184 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Skydash Admin</title>
-    <!-- plugins:css -->
+
     <link rel="stylesheet" href="{{ asset('assets/vendors/feather/feather.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
+
     <link rel="stylesheet" href="{{ asset('assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/js/select.dataTables.min.css') }}">
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
+
     <link rel="stylesheet" href="{{ asset('assets/css/vertical-layout-light/style.css') }}">
-    <!-- endinject -->
+
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}">
+
+    @yield('css')
+
+
+    @php
+        use Carbon\Carbon;
+    @endphp
+
+    <style>
+        .container-scroller {
+            background: ;
+        }
+
+        .ahay a.uhuy {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            color: #000000;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .ahay a.uhuy:hover {
+            background-color: #4B49AC;
+            color: #000000;
+            text-decoration: none;
+        }
+
+        .ahay.active a.uhuy {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .ahay.active a.uhuy:hover {
+            color: #fff;
+        }
+    </style>
+
 </head>
 
 <body>
 
-        @yield('content')
+    <div class="container-scroller">
 
+        @extends('bar.navbar')
 
-    {{-- <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url('/') }}">
-                {{ config('app.name', 'Laravel') }}
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="{{ __('Toggle navigation') }}">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+        <div class="container-fluid page-body-wrapper">
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <!-- Left Side Of Navbar -->
-                <ul class="navbar-nav me-auto">
-
-                </ul>
-
-                <!-- Right Side Of Navbar -->
-                <ul class="navbar-nav ms-auto">
-                    <!-- Authentication Links -->
-                    @guest
-                        @if (Route::has('login'))
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                            </li>
-                        @endif
-
-                        @if (Route::has('register'))
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                            </li>
-                        @endif
-                    @else
-                        <li class="nav-item dropdown">
-                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                {{ Auth::user()->name }}
-                            </a>
-
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ route('logout') }}"
-                                    onclick="event.preventDefault();
-                                    document.getElementById('logout-form').submit();">
-                                    {{ __('Logout') }}
+            <nav class="sidebar sidebar-offcanvas mt-3" id="sidebar">
+                @auth
+                    @if (Auth::user()->role === 'superadmin')
+                        <ul class="nav">
+                            <li class="nav-item ahay {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}">
+                                <a class="nav-link uhuy" href="{{ route('superadmin.dashboard') }}">
+                                    <i class="icon-grid menu-icon"></i>
+                                    <span class="menu-title">Dashboard</span>
                                 </a>
+                            </li>
 
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                    @csrf
-                                </form>
-                            </div>
-                        </li>
-                    @endguest
-                </ul>
-            </div>
+                            <li class="nav-item ahay {{ request()->routeIs('superadmin.rt.index') ? 'active' : '' }}">
+                                <a class="nav-link uhuy" href="{{ route('superadmin.rt.index') }}">
+                                    <i class="icon-paper menu-icon"></i>
+                                    <span class="menu-title">RT</span>
+                                </a>
+                            </li>
+
+                            <li
+                                class="nav-item ahay {{ request()->routeIs('superadmin.manajemen-superadmin.index') || request()->routeIs('superadmin.manajemen-admin.index') ? 'active menu-open' : '' }}">
+                                <a class="nav-link uhuy" data-toggle="collapse" href="#ui-basic"
+                                    aria-expanded="{{ request()->routeIs('superadmin.manajemen-superadmin.index') || request()->routeIs('superadmin.manajemen-admin.index') ? 'true' : 'false' }}"
+                                    aria-controls="ui-basic">
+                                    <i class="icon-layout menu-icon"></i>
+                                    <span class="menu-title">Manajemen</span>
+                                    <i class="menu-arrow"></i>
+                                </a>
+                                <div class="collapse {{ request()->routeIs('superadmin.manajemen-superadmin.index') || request()->routeIs('superadmin.manajemen-admin.index') ? 'show' : '' }}"
+                                    id="ui-basic">
+                                    <ul class="nav flex-column sub-menu">
+                                        <li
+                                            class="nav-item ahay {{ request()->routeIs('superadmin.manajemen-superadmin.index') ? 'active' : '' }}">
+                                            <a class="nav-link uhuy"
+                                                href="{{ route('superadmin.manajemen-superadmin.index') }}">
+                                                Admin RW
+                                            </a>
+                                        </li>
+                                        <li
+                                            class="nav-item ahay {{ request()->routeIs('superadmin.manajemen-admin.index') ? 'active' : '' }}">
+                                            <a class="nav-link uhuy"
+                                                href="{{ route('superadmin.manajemen-admin.index') }}">
+                                                Admin RT
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <li class="nav-item ahay {{ request()->routeIs('superadmin.aktivitas') ? 'active' : '' }}">
+                                <a class="nav-link uhuy" href="{{ route('superadmin.aktivitas') }}">
+                                    <i class="icon-paper menu-icon"></i>
+                                    <span class="menu-title">Aktivasi</span>
+                                </a>
+                            </li>
+
+                        </ul>
+                    @elseif (Auth::user()->role === 'admin')
+                        <ul class="nav">
+                            <li class="nav-item ahay {{ request()->routeIs('admin.index') ? 'active' : '' }}">
+                                <a class="nav-link uhuy" href="{{ route('admin.index', ['nama_RT' => $nama_RT]) }}">
+                                    <i class="icon-grid menu-icon"></i>
+                                    <span class="menu-title">Dashboard</span>
+                                </a>
+                            </li>
+                            <li class="nav-item ahay {{ request()->routeIs('admin.warga.index') ? 'active' : '' }}">
+                                <a class="nav-link uhuy"
+                                    href="{{ route('admin.warga.index', ['nama_RT' => $nama_RT]) }}">
+                                    <i class="icon-grid menu-icon"></i>
+                                    <span class="menu-title">Data Warga</span>
+                                </a>
+                            </li>
+                            <li class="nav-item ahay {{ request()->routeIs('admin.pembayaran.index') ? 'active' : '' }}">
+                                <a class="nav-link uhuy"
+                                    href="{{ route('admin.pembayaran.index', ['nama_RT' => $nama_RT, 'year' => Carbon::now('Asia/Jakarta')->year, 'month' => Carbon::now('Asia/Jakarta')->month]) }}">
+                                    <i class="icon-grid menu-icon"></i>
+                                    <span class="menu-title">Pembayaran Warga</span>
+                                </a>
+                            </li>
+                            <li class="nav-item ahay {{ request()->routeIs('admin.kas.index') ? 'active' : '' }}">
+                                <a class="nav-link uhuy"
+                                    href="{{ route('admin.kas.index', ['nama_RT' => $nama_RT]) }}">
+                                    <i class="icon-paper menu-icon"></i>
+                                    <span class="menu-title">Kas {{ Auth::user()->rt->nama_RT }}</span>
+                                </a>
+                            </li>
+                            <li class="nav-item ahay {{ request()->routeIs('admin.aktivitas') ? 'active' : '' }}">
+                                <a class="nav-link uhuy" href="{{ route('admin.aktivitas', ['nama_RT' => $nama_RT]) }}">
+                                    <i class="icon-paper menu-icon"></i>
+                                    <span class="menu-title">Aktivasi</span>
+                                </a>
+                            </li>
+                        </ul>
+                    @endif
+                @endauth
+            </nav>
+
+            @yield('content')
+
         </div>
-    </nav> --}}
+    </div>
+
 
     <!-- plugins:js -->
     <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
-    <!-- endinject -->
-    <!-- Plugin js for this page -->
+
     <script src="{{ asset('assets/vendors/chart.js/Chart.min.js') }}"></script>
 
-    <!-- End plugin js for this page -->
-    <!-- inject:js -->
     <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
     <script src="{{ asset('assets/js/hoverable-collapse.js') }}"></script>
     <script src="{{ asset('assets/js/template.js') }}"></script>
     <script src="{{ asset('assets/js/settings.js') }}"></script>
     <script src="{{ asset('assets/js/todolist.js') }}"></script>
-    <!-- endinject -->
-    <!-- Custom js for this page-->
+
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
     <script src="{{ asset('assets/js/Chart.roundedBarCharts.js') }}"></script>
-    <!-- End custom js for this page-->
+
+    @stack('scripts')
 </body>
 
 </html>

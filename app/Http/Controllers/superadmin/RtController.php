@@ -83,7 +83,7 @@ class RtController extends Controller
         ActivityLog::create([
             'user_id' => auth()->id(),
             'activity' => 'delete',
-            'description' => "Menghapus data RT dengan nama - {$nama_RT} - {$nama_jalan}",
+            'description' => "Menghapus data {$nama_RT} - {$nama_jalan}",
             'target_table' => 'rts',
             'target_id' => $id,
             'performed_at' => now(),

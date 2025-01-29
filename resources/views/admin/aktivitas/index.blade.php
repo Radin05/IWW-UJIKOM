@@ -23,6 +23,7 @@
                                             <th>Nama Akun</th>
                                             <th>Aktivitasnya</th>
                                             <th>Deskripsi</th>
+                                            <th>Target</th>
                                             <th>Waktu Aktivitas</th>
                                         </tr>
                                     </thead>
@@ -42,6 +43,7 @@
                                                     </span>
                                                 </td>
                                                 <td>{{ $data->description }}</td>
+                                                <td>{{ $data->target_id }}</td>
                                                 <td>{{ $data->performed_at
                                                     ? \Carbon\Carbon::parse($data->performed_at)->setTimezone('Asia/Jakarta')->translatedFormat('d F Y H:i:s')
                                                     : '-' }}
@@ -70,17 +72,21 @@
     <script src="https://cdn.datatables.net/2.2.1/js/jquery.dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.2.1/js/dataTables.bootstrap4.js"></script>
     <script>
-        new DataTable('#example', {
-        pageLength: 10, // Jumlah data per halaman
-        lengthChange: true,
-        language: {
-            search: "Cari:",
-            lengthMenu: "Tampilkan _MENU_ data per halaman",
-            zeroRecords: "Tidak ada data ditemukan",
-            info: "Menampilkan _START_ hingga _END_ dari total _TOTAL_ data",
-            infoEmpty: "Data tidak tersedia",
-            infoFiltered: "(disaring dari _MAX_ total data)"
-        }
-    });
+        $(document).ready(function() {
+            new DataTable('#example', {
+                pageLength: 10, // Jumlah data per halaman
+                lengthChange: true,
+                language: {
+                    search: "Cari:",
+                    lengthMenu: "Tampilkan _MENU_ data per halaman",
+                    zeroRecords: "Tidak ada data ditemukan",
+                    info: "Menampilkan _START_ hingga _END_ dari total _TOTAL_ data",
+                    infoEmpty: "Data tidak tersedia",
+                    infoFiltered: "(disaring dari _MAX_ total data)"
+                }
+            });
+            $('.dropdown-toggle').dropdown();
+        });
     </script>
 @endpush
+

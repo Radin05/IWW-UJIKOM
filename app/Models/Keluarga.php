@@ -26,6 +26,11 @@ class Keluarga extends Model
         return $this->hasOne(User::class);
     }
 
+    public function bayar()
+    {
+        return $this->hasMany(Pembayaran::class);
+    }
+
     public function activityLog()
     {
         return $this->hasMany(ActivityLog::class, 'target_id', 'no_kk');

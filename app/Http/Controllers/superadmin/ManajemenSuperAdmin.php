@@ -51,7 +51,6 @@ class ManajemenSuperAdmin extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user->update([
@@ -65,7 +64,7 @@ class ManajemenSuperAdmin extends Controller
         ActivityLog::create([
             'user_id' => auth()->id(),
             'activity' => 'update',
-            'description' => "Mengedit field superadmin dengan email {$user->email}",
+            'description' => "Mengubah field superadmin dari email {$user->email}",
             'target_table' => 'users',
             'target_id' => $user->id,
             'performed_at' => now(),
@@ -83,7 +82,7 @@ class ManajemenSuperAdmin extends Controller
         ActivityLog::create([
             'user_id' => auth()->id(),
             'activity' => 'delete',
-            'description' => "Menghapus Superadmin dengan Email {$user->email}",
+            'description' => "Menghapus Superadmin dengan nama Email {$user->email}",
             'target_table' => 'users',
             'target_id' => $id,
             'performed_at' => now(),

@@ -1,11 +1,14 @@
 <?php
 
 use App\Http\Controllers\admin\AdminController;
+use App\Http\Controllers\admin\AktivitasAdmin;
+use App\Http\Controllers\admin\KasRTController;
 use App\Http\Controllers\admin\KeluargaController;
+use App\Http\Controllers\admin\PembayaranController;
+use App\Http\Controllers\superadmin\Aktivitas;
 use App\Http\Controllers\superadmin\ManajemenAdmin;
 use App\Http\Controllers\superadmin\ManajemenSuperAdmin;
 use App\Http\Controllers\superadmin\RtController;
-use App\Http\Controllers\superadmin\Aktivitas;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -51,7 +54,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/{nama_RT}/warga/{keluarga}/store-akun', [KeluargaController::class, 'storeAkun'])->name('warga.storeAkun');
     Route::put('/{nama_RT}/warga/{no_kk_keluarga}/update-akun', [KeluargaController::class, 'updateAkun'])->name('warga.updateAkun');
 
+    Route::resource('/{nama_RT}/pembayaran', PembayaranController::class)->except(['show']);
 
+    Route::get('/{nama_RT}/kas-rt', [KasRTController::class, 'index'])->name('kas.index');
+    Route::post('/{nama_RT}/kas-rt/update', [KasRTController::class, 'update'])->name('kas.update');
+
+
+    Route::get('/{nama_RT}/aktivitas', [AktivitasAdmin::class, 'index'])->name('aktivitas');
 });
 
 Auth::routes();

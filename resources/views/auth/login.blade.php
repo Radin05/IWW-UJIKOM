@@ -1,6 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.include')
 
 @section('content')
+
     <div class="container-scroller">
         <div class="container-fluid page-body-wrapper full-page-wrapper">
             <div class="content-wrapper d-flex align-items-center auth bg-primary px-0">

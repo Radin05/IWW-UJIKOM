@@ -13,21 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('kas_rts', function (Blueprint $table) {
             $table->id();
-            $table->string('no_kk_keluarga')->nullable();
-            $table->string('name')->nullable();
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('role')->default('user')->nullable();
             $table->unsignedBigInteger('rt_id')->nullable();
-            $table->rememberToken();
+            $table->unsignedBigInteger('pembayaran_id')->nullable();
+            $table->decimal('jumlah_kas_rt', 15, 2);
             $table->timestamps();
 
-            // Tambahkan foreign key dengan benar
-            $table->foreign('no_kk_keluarga')->references('no_kk')->on('keluargas')->onDelete('cascade');
             $table->foreign('rt_id')->references('id')->on('rts')->onDelete('cascade');
+            $table->foreign('pembayaran_id')->references('id')->on('pembayarans')->onDelete('cascade');
         });
     }
 
@@ -38,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('kas_rts');
     }
 };

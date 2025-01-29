@@ -8,7 +8,12 @@ class Aktivitas extends Controller
 {
     public function index()
     {
-        $activityLogs = ActivityLog::with('user')->latest()->get();
+        $activityLogs = ActivityLog::with('user')
+            ->whereHas('user', function ($query) {
+                $query->where('role', 'superadmin');
+            })
+            ->latest()
+            ->paginate(10);
 
         return view('superadmin.aktivitas.index', compact('activityLogs'));
     }
