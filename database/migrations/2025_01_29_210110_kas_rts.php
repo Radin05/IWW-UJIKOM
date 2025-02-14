@@ -13,15 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('keluargas', function (Blueprint $table) {
-            $table->string('no_kk')->primary();
-            $table->string('nama_keluarga');
-            $table->string('alamat');
-            $table->string('no_telp');
+        Schema::create('kas_rts', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('rt_id')->nullable();
+            $table->unsignedBigInteger('pembayaran_id')->nullable();
+            $table->unsignedBigInteger('pengeluaran_kas_rt_id')->nullable();
+            $table->decimal('jumlah_kas_rt', 15, 2);
             $table->timestamps();
 
+            $table->foreign('pengeluaran_kas_rt_id')->references('id')->on('pengeluaran_kas_rts');
             $table->foreign('rt_id')->references('id')->on('rts')->onDelete('cascade');
+            $table->foreign('pembayaran_id')->references('id')->on('pembayarans')->onDelete('set null');
         });
     }
 
@@ -32,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('keluargas');
+        Schema::dropIfExists('kas_rts');
     }
 };

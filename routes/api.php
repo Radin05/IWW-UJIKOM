@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\Keluarga;
+use App\Http\Controllers\Api\Pembayaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,10 +20,14 @@ Route::post('/register', [\App\Http\Controllers\Api\AuthController::class, 'regi
 Route::post('/login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
 
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
+
+    Route::resource('keluarga', Keluarga::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('pembayaran', Pembayaran::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::get('all_pembayaran', [\App\Http\Controllers\Api\Pembayaran::class, 'index2']);
 });

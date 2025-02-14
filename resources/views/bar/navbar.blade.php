@@ -10,7 +10,7 @@
 
 <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
     <div class="text-center navbar-brand-wrapper align-items-center justify-content-center">
-        <a href="index.html"><img src="{{ asset('assets/images/RR2.png') }}" width="83" height="65" 
+        <a href=""><img src="{{ asset('assets/images/RR2.png') }}" width="83" height="65"
             class="responsive-logo mt-2 mx-3" alt="logo" /></a>
     </div>
     <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">

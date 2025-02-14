@@ -28419,7 +28419,7 @@
     min-height: calc(100vh - 60px);
     display: -webkit-flex;
     display: flex;
-    background: #FFEBCD;
+    background: aliceblue;
     -webkit-flex-direction: row;
     flex-direction: row;
     padding-left: 0;
@@ -28467,7 +28467,7 @@
   /* Sidebar */
   .sidebar {
     min-height: calc(100vh - 60px);
-    background: rgba(240, 248, 255, 0.9); 
+    background: rgba(240, 248, 255, 0.9);
     font-family: "Nunito", sans-serif;
     font-weight: 500;
     padding: 0;
@@ -28840,7 +28840,7 @@
   }
 
   .navbar .navbar-menu-wrapper {
-    background: #fff; 
+    background: #fff;
     transition: width 0.25s ease;
     -webkit-transition: width 0.25s ease;
     -moz-transition: width 0.25s ease;

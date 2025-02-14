@@ -1,8 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Super Admin Add RT')
+@section('title', 'Super Admin Add Admin RT')
 
 @section('content')
+
 
     <style>
         .btn-outline-info.dropdown-toggle::after {
@@ -36,26 +37,58 @@
                                     </script>
                                 @endif
                             </p>
-                            <form class="forms-sample" action="{{ route('superadmin.rt.store') }}" method="POST"
+                            <form class="forms-sample" action="{{ route('operator.manajemen-admin.store') }}" method="POST"
                                 id="formData">
                                 @csrf
 
-                                <div class="form-group mb-3">
-                                    <label for="nama_RT" class="form-label">Nama RT</label>
-                                    <input type="text" class="form-control @error('nama_RT') is-invalid @enderror"
-                                        id="nama_RT" name="nama_RT" value="{{ old('nama_RT') }}">
-                                    @error('nama_RT')
+                                <div class="form-group mb-2">
+                                    <label for="name" class="form-label">Nama</label>
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                        id="name" name="name" value="{{ old('name') }}">
+                                    @error('name')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
 
-                                <div class="form-group mb-3">
-                                    <label for="nama_jalan" class="form-label">Nama Jalan</label>
-                                    <input type="text" class="form-control @error('nama_jalan') is-invalid @enderror"
-                                        id="nama_jalan" name="nama_jalan" value="{{ old('nama_jalan') }}">
-                                    @error('nama_jalan')
+                                <div class="form-group mb-2">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                        id="email" name="email" value="{{ old('email') }}">
+                                    @error('email')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="rt_id" class="form-label">RT</label>
+                                    <select class="form-control @error('rt_id') is-invalid @enderror" id="rt_id"
+                                        name="rt_id" required>
+                                        <option value="" disabled selected>Select RT</option>
+                                        @foreach ($rts as $rt)
+                                            <option value="{{ $rt->id }}"
+                                                {{ old('rt_id') == $rt->id ? 'selected' : '' }}>
+                                                {{ $rt->nama_RT }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('rt_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                        id="password" name="password">
+                                    @error('password')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
+                                    <input type="password" class="form-control" id="password_confirmation"
+                                        name="password_confirmation">
                                 </div>
 
                                 <button type="button" class="btn btn-danger" onclick="hapusPesan()">Batal</button>
@@ -64,28 +97,28 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="col-lg-8 grid-margin stretch-card">
                     <div class="card card-tale">
                         <div class="card-body">
-
+                            <h4 class="text-light text-center">Data Admin</h4>
 
                             <div class="table-responsive pt-3">
-                                <table class="table table-dark">
+                                <table class="table table-bordered text-light bg-dark">
                                     <thead>
                                         <tr>
-                                            <th>No</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
                                             <th>RT</th>
-                                            <th>Nama Jalan</th>
-                                            <th>Aksi</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($rts as $data)
+                                        @foreach ($admin as $data)
                                             <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $data->nama_RT }}</td>
-                                                <td>{{ $data->nama_jalan }}</td>
+                                                <td>{{ $data->name }}</td>
+                                                <td>{{ $data->email }}</td>
+                                                <td>{{ $data->rt->nama_RT }}</td>
+
                                                 <td>
                                                     <div class="dropdown">
                                                         <button type="button" class="btn btn-outline-info"
@@ -97,22 +130,17 @@
                                                             aria-labelledby="dropdownMenuIconButton3">
 
                                                             <button class="dropdown-item" data-bs-toggle="modal"
-                                                                data-bs-target="#editRTModal-{{ $data->id }}">Edit</button>
+                                                                data-bs-target="#editAdminModal-{{ $data->id }}">Edit</button>
 
                                                             <div class="dropdown-divider"></div>
 
-                                                            <form action="{{ route('superadmin.rt.destroy', $data->id) }}"
-                                                                method="POST"
-                                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus RT ini?')">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="dropdown-item">Hapus</button>
-                                                            </form>
+                                                            <a href="{{ route('operator.manajemen-admin.destroy', $data->id) }}"
+                                                                class="dropdown-item" data-confirm-delete="true">Hapus</a>
 
                                                             <div class="dropdown-divider"></div>
 
                                                             <button class="dropdown-item" data-bs-toggle="modal"
-                                                                data-bs-target="#activityLog">Aktifitas</button>
+                                                                data-bs-target="#activityLog-{{ $data->id }}">Aktifitas</button>
 
                                                         </div>
                                                     </div>
@@ -122,41 +150,63 @@
                                     </tbody>
                                 </table>
 
-                                @foreach ($rts as $data)
-                                    <div class="modal fade" id="editRTModal-{{ $data->id }}" tabindex="-1"
-                                        aria-labelledby="editRTModal-{{ $data->id }}" aria-hidden="true">
+
+                                @foreach ($admin as $data)
+                                    <div class="modal fade" id="editAdminModal-{{ $data->id }}" tabindex="-1"
+                                        aria-labelledby="editAdminModal-{{ $data->id }}" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content bg-dark">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="editRTModal-{{ $data->id }}">
+                                                    <h5 class="modal-title" id="editAdminModal-{{ $data->id }}">
                                                         Edit RT</h5>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="{{ route('superadmin.rt.update', $data->id) }}"
+                                                    <form
+                                                        action="{{ route('operator.manajemen-admin.update', $data->id) }}"
                                                         method="POST">
                                                         @csrf
                                                         @method('PUT')
 
                                                         <div class="mb-3">
-                                                            <label for="nama_RT-{{ $data->id }}"
-                                                                class="form-label">Nama RT</label>
+                                                            <label for="name" class="form-label">Nama
+                                                                RT</label>
                                                             <input type="text"
-                                                                class="form-control @error('nama_RT') is-invalid @enderror"
-                                                                id="nama_RT-{{ $data->id }}" name="nama_RT"
-                                                                value="{{ $data->nama_RT }}">
-                                                            @error('nama_RT')
+                                                                class="form-control @error('name') is-invalid @enderror"
+                                                                id="name" name="name"
+                                                                value="{{ $data->name }}">
+                                                            @error('name')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
                                                         </div>
 
                                                         <div class="mb-3">
-                                                            <label for="nama_jalan-{{ $data->id }}"
-                                                                class="form-label">Nama Jalan</label>
-                                                            <input type="text"
-                                                                class="form-control @error('nama_jalan') is-invalid @enderror"
-                                                                id="nama_jalan-{{ $data->id }}" name="nama_jalan"
-                                                                value="{{ $data->nama_jalan }}">
-                                                            @error('nama_jalan')
+                                                            <label for="email" class="form-label">Email</label>
+                                                            <input type="email"
+                                                                class="form-control @error('email') is-invalid @enderror"
+                                                                id="email" name="email"
+                                                                value="{{ $data->email }}">
+                                                            @error('email')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+
+                                                        <div class="form-group mb-3">
+                                                            <label for="rt_id-{{ $data->id }}"
+                                                                class="form-label">RT</label>
+                                                            <select
+                                                                class="form-control @error('rt_id') is-invalid @enderror"
+                                                                id="rt_id-{{ $data->id }}" name="rt_id" required>
+                                                                <option value="" disabled
+                                                                    {{ old('rt_id', $data->rt_id) ? '' : 'selected' }}>
+                                                                    Select RT</option>
+                                                                @foreach ($rts as $rt)
+                                                                    <option value="{{ $rt->id }}"
+                                                                        {{ old('rt_id', $data->rt_id) == $rt->id ? 'selected' : '' }}>
+                                                                        {{ $rt->nama_RT }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                            @error('rt_id')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
                                                         </div>
@@ -170,19 +220,17 @@
                                             </div>
                                         </div>
                                     </div>
-                                @endforeach
 
-                                @foreach ($rts as $data)
                                     @php
-                                    $createLog = $data->activityLog->where('activity', 'create')->first();
-                                    $updateLog = $data->activityLog->where('activity', 'update')->last();
+                                        $createLog = $data->activityLog->where('activity', 'create')->first();
+                                        $updateLog = $data->activityLog->where('activity', 'update')->last();
                                     @endphp
-                                    <div class="modal fade" id="activityLog" tabindex="-1" aria-labelledby="activityLog"
-                                        aria-hidden="true">
+                                    <div class="modal fade" id="activityLog-{{ $data->id }}" tabindex="-1"
+                                        aria-labelledby="activityLog-{{ $data->id }}" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content bg-dark">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="activityLog">
+                                                    <h5 class="modal-title" id="activityLog-{{ $data->id }}">
                                                         Aktifitas CRUD</h5>
                                                 </div>
 
@@ -216,6 +264,15 @@
                                                     </div>
 
                                                     <div class="mb-3">
+                                                        <label class="form-label">Deskripsi Perubahan:</label>
+                                                        <small>
+                                                            <ul>
+                                                                {!! $updateLog?->description ?? 'Belum ada perubahan' !!}
+                                                            </ul>
+                                                        </small>
+                                                    </div>
+
+                                                    <div class="mb-3">
                                                         <label class="form-label">Waktu Aktifitas :
                                                             <small>
                                                                 {{ $updateLog?->performed_at
@@ -239,21 +296,25 @@
         </div>
     </div>
 
+
     <script>
         function hapusPesan() {
             document.getElementById('formData').reset();
         }
     </script>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     @if ($errors->any())
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                var editRTModal = new bootstrap.Modal(document.getElementById('editRTModal'));
-                editRTModal.show();
+                var createAdminModal = new bootstrap.Modal(document.getElementById('createAdminModal'));
+                createAdminModal.show();
             });
         </script>
     @endif
+
+    @include('sweetalert::alert')
 
 @endsection

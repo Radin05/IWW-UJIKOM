@@ -33,16 +33,16 @@ class PembayaranController extends Controller
 
         $keluargas = Keluarga::where('rt_id', $admin->rt_id)->pluck('no_kk');
 
-        $pembayarans = Pembayaran::whereYear('tgl_pembayaran', $year)
-            ->whereMonth('tgl_pembayaran', $month)
+        $pembayarans = Pembayaran::where('year', $year)
+            ->where('month', $month)
             ->whereIn('no_kk_keluarga', $keluargas)
             ->get();
 
-        $totalPembayaranFiltered = $pembayarans->sum('sejumlah');
+        $totalPembayaranPerbulan = $pembayarans->sum('sejumlah');
 
         $keluargas = Keluarga::where('rt_id', $admin->rt_id)->get();
 
-        return view('admin.keluarga.bayar', compact('pembayarans', 'keluargas', 'nama_RT', 'year', 'month', 'totalPembayaranFiltered'));
+        return view('admin.keluarga.bayar', compact('pembayarans', 'keluargas', 'nama_RT', 'year', 'month', 'totalPembayaranPerbulan'));
     }
 
     public function store(Request $request, $nama_RT)
@@ -51,19 +51,19 @@ class PembayaranController extends Controller
             'no_kk_keluarga' => 'required|exists:keluargas,no_kk',
             'sejumlah'       => 'required|numeric|min:0',
             'tgl_pembayaran' => 'required|date',
+            'year'           => 'required|integer',
+            'month'          => 'required|integer|min:1|max:12',
         ]);
 
         $tgl_pembayaran = Carbon::parse($request->tgl_pembayaran);
-        $year           = $tgl_pembayaran->year;
-        $month          = $tgl_pembayaran->month;
 
         // Menyimpan pembayaran
         $pembayaran = Pembayaran::create([
             'no_kk_keluarga' => $request->no_kk_keluarga,
             'sejumlah'       => $request->sejumlah,
             'tgl_pembayaran' => $tgl_pembayaran,
-            'year'           => $year,
-            'month'          => $month,
+            'year'           => $request->year,
+            'month'          => $request->month,
         ]);
 
         ActivityLog::create([
@@ -82,23 +82,77 @@ class PembayaranController extends Controller
         ])->with('success', 'Data pembayaran berhasil disimpan!');
     }
 
-    public function show(Pembayaran $pembayaran)
+    public function update(Request $request, $nama_RT, Pembayaran $pembayaran)
     {
-        //
+        $request->validate([
+            'sejumlah'       => 'required|numeric|min:0',
+            'tgl_pembayaran' => 'required|date',
+        ]);
+
+        $tgl_pembayaran = Carbon::parse($request->tgl_pembayaran);
+        $year           = $tgl_pembayaran->year;
+        $month          = $tgl_pembayaran->month;
+
+        $oldData = $pembayaran->replicate();
+
+        // Update pembayaran
+        $pembayaran->update([
+            'sejumlah'       => $request->sejumlah,
+            'tgl_pembayaran' => $tgl_pembayaran,
+            'year'           => $year,
+            'month'          => $month,
+        ]);
+
+        // Catat aktivitas perubahan
+        ActivityLog::create([
+            'user_id'      => auth()->id(),
+            'activity'     => 'update',
+            'description'  => "Mengubah pembayaran dari No KK {$pembayaran->no_kk_keluarga} -> jumlah {$oldData->sejumlah} menjadi {$pembayaran->sejumlah}
+                            <br> tanggal {$oldData->tgl_pembayaran} menjadi {$pembayaran->tgl_pembayaran}",
+            'target_table' => 'pembayarans',
+            'target_id'    => $pembayaran->id,
+            'performed_at' => now(),
+        ]);
+
+        return redirect()->route('admin.pembayaran.index', [
+            'nama_RT' => $nama_RT,
+            'year'    => $pembayaran->year,
+            'month'   => $pembayaran->month,
+        ])->with('success', 'Data pembayaran berhasil diubah!');
     }
 
-    public function edit(Pembayaran $pembayaran)
+    public function destroy($nama_RT, Pembayaran $pembayaran)
     {
-        //
-    }
+        // Simpan data sebelum dihapus untuk log aktivitas
+        $deletedData = $pembayaran->replicate();
+        $changes     = [];
 
-    public function update(Request $request, Pembayaran $pembayaran)
-    {
-        //
-    }
+        // Cek apakah data pembayaran terkait dengan keluarga
+        $keluarga = Keluarga::where('no_kk', $deletedData->no_kk_keluarga)->first();
 
-    public function destroy(Pembayaran $pembayaran)
-    {
-        //
+        if ($keluarga) {
+            $changes[] = "Pembayaran dari keluarga dengan No KK {$deletedData->no_kk_keluarga} ({$keluarga->nama_kepala_keluarga}) sebesar Rp " . number_format($deletedData->sejumlah, 0, ',', '.') . " pada {$deletedData->tgl_pembayaran->format('d M Y')} telah dihapus.";
+        } else {
+            $changes[] = "Pembayaran dengan No KK {$deletedData->no_kk_keluarga} sebesar Rp " . number_format($deletedData->sejumlah, 0, ',', '.') . " pada {$deletedData->tgl_pembayaran->format('d M Y')} telah dihapus.";
+        }
+
+        // Hapus pembayaran
+        $pembayaran->delete();
+
+        // Simpan log aktivitas
+        ActivityLog::create([
+            'user_id'      => auth()->id(),
+            'activity'     => 'delete',
+            'description'  => implode('<br>', $changes),
+            'target_table' => 'pembayarans',
+            'target_id'    => $deletedData->id,
+            'performed_at' => now(),
+        ]);
+
+        return redirect()->route('admin.pembayaran.index', [
+            'nama_RT' => $nama_RT,
+            'year'    => $deletedData->year,
+            'month'   => $deletedData->month,
+        ])->with('success', 'Data pembayaran berhasil dihapus!');
     }
 }

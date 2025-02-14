@@ -12,13 +12,18 @@ class LoginController extends Controller
 
     protected function authenticated(Request $request, $user)
     {
-        if ($user->role === 'superadmin') {
-            return redirect('/superadmin/dashboard');
-        } elseif ($user->role === 'admin') {
+        if ($user->role === 'operator') {
+            return redirect('/operator/dashboard');
+        }
+        elseif ($user->role === 'admin') {
             $nama_RT = $user->rt->nama_RT;
 
             return redirect('admin/'.$nama_RT.'/dashboard');
-        } else {
+        }
+        elseif ($user->role === 'superadmin') {
+            return redirect('superadmin/dashboard');
+        }
+        else {
             return redirect('/user');
         }
     }

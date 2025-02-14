@@ -4,7 +4,7 @@ namespace App\Http\Controllers\superadmin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 
-class Aktivitas extends Controller
+class AktivitasSuperadmin extends Controller
 {
     public function index()
     {

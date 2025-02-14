@@ -90,7 +90,7 @@
                                         <div class="card-body">
                                             <h1 class="card-title">Total Pembayaran Bulan Ini</h1>
                                             <h3 class="fs-4 fw-bold text-dark">
-                                                Rp. {{ number_format($totalPembayaranFiltered, 0, ',', '.') }}
+                                                Rp. {{ number_format($totalPembayaranPerbulan, 0, ',', '.') }}
                                             </h3>
                                         </div>
                                     </div>
@@ -146,6 +146,39 @@
                                                     @enderror
                                                 </div>
 
+                                                <!-- Pilih Bulan -->
+                                                <div class="mb-3">
+                                                    <label for="month&year" class="form-label">Pilih Bulan dan Tahun IWW nya</label>
+
+                                                    <select class="form-control @error('month') is-invalid @enderror"
+                                                        id="month" name="month" required>
+                                                        @for ($i = 1; $i <= 12; $i++)
+                                                            <option value="{{ $i }}"
+                                                                {{ old('month') == $i ? 'selected' : '' }}>
+                                                                {{ \Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
+                                                            </option>
+                                                        @endfor
+                                                    </select>
+                                                    @error('month')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+
+                                                    <br>
+
+                                                    <select class="form-control @error('year') is-invalid @enderror"
+                                                        id="year" name="year" required>
+                                                        @for ($i = now()->year; $i >= 2018; $i--)
+                                                            <option value="{{ $i }}"
+                                                                {{ old('year') == $i ? 'selected' : '' }}>
+                                                                {{ $i }}
+                                                            </option>
+                                                        @endfor
+                                                    </select>
+                                                    @error('year')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+
                                                 <!-- Jumlah Pembayaran -->
                                                 <div class="mb-3">
                                                     <label for="sejumlah" class="form-label">Jumlah Pembayaran</label>
@@ -176,23 +209,32 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($keluargas as $data)
+                                        @forelse ($keluargas as $data)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $data->nama_keluarga }}</td>
                                                 <td>
-                                                    Rp.
-                                                    {{ $pembayarans->where('no_kk_keluarga', $data->no_kk)->sum('sejumlah') }}
+                                                    <br>
+                                                    @if ($pembayarans->isNotEmpty())
+                                                        @foreach ($pembayarans->where('no_kk_keluarga', $data->no_kk) as $pembayaran)
+                                                            Rp. {{ number_format($pembayaran->sejumlah, 0, ',', '.') }}
+                                                            <br><br>
+                                                        @endforeach
+                                                    @else
+                                                        Rp. 0
+                                                    @endif
                                                 </td>
                                                 <td>
-                                                    @php
-                                                        $tanggal = $pembayarans
-                                                            ->where('no_kk_keluarga', $data->no_kk)
-                                                            ->pluck('tgl_pembayaran')
-                                                            ->first();
-                                                    @endphp
-
-                                                    {{ $tanggal ? \Carbon\Carbon::parse($tanggal)->format('d-m-Y') : 'Belum ada pembayaran' }}
+                                                    <br>
+                                                    @if ($pembayarans->where('no_kk_keluarga', $data->no_kk)->isNotEmpty())
+                                                        @foreach ($pembayarans->where('no_kk_keluarga', $data->no_kk) as $pembayaran)
+                                                            {{ $pembayaran->tgl_pembayaran ? \Carbon\Carbon::parse($pembayaran->tgl_pembayaran)->format('d-m-Y') : 'Belum ada pembayaran' }}
+                                                            <br>
+                                                            <br>
+                                                        @endforeach
+                                                    @else
+                                                        Belum ada pembayaran
+                                                    @endif
                                                 </td>
                                                 <td>
                                                     <div class="dropdown">
@@ -203,16 +245,166 @@
                                                         </button>
                                                         <div class="dropdown-menu bg-secondary"
                                                             aria-labelledby="dropdownMenuIconButton3">
+                                                            <button class="dropdown-item" data-bs-toggle="modal"
+                                                                data-bs-target="#editPembayaranModal-{{ $data->no_kk }}">Edit</button>
                                                             <div class="dropdown-divider"></div>
                                                             <button class="dropdown-item" data-bs-toggle="modal"
-                                                                data-bs-target="#activityLog-{{ $data->no_kk }}">Aktifitas</button>
+                                                                data-bs-target="#deletePembayaranModal-{{ $data->no_kk }}">Hapus</button>
+
                                                         </div>
                                                     </div>
                                                 </td>
                                             </tr>
-                                        @endforeach
+                                        @empty
+                                            <tr>
+                                                <td colspan="5">Tidak ada data pembayaran.</td>
+                                            </tr>
+                                        @endforelse
                                     </tbody>
                                 </table>
+
+                                @foreach ($keluargas as $data)
+                                    <div class="modal fade" id="editPembayaranModal-{{ $data->no_kk }}" tabindex="-1"
+                                        aria-labelledby="editPembayaranLabel-{{ $data->no_kk }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content bg-dark">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Edit Pembayaran</h5>
+                                                    <button type="button" class="close" data-bs-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    @foreach ($pembayarans->where('no_kk_keluarga', $data->no_kk) as $pembayaran)
+                                                        <form
+                                                            action="{{ route('admin.pembayaran.update', ['nama_RT' => $nama_RT, 'pembayaran' => $pembayaran->id]) }}"
+                                                            method="POST">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="form-group">
+                                                                <label>Jumlah Pembayaran</label>
+                                                                <input type="number" class="form-control"
+                                                                    name="sejumlah" value="{{ $pembayaran->sejumlah }}"
+                                                                    required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Tanggal Pembayaran</label>
+                                                                <input type="date" class="form-control"
+                                                                    name="tgl_pembayaran"
+                                                                    value="{{ $pembayaran->tgl_pembayaran->format('Y-m-d') }}"
+                                                                    required>
+                                                            </div>
+                                                            <button type="submit" class="btn btn-primary mt-2">Simpan
+                                                                Perubahan</button>
+                                                            <hr>
+                                                        </form>
+                                                    @endforeach
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Batal</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal fade" id="deletePembayaranModal-{{ $data->no_kk }}"
+                                        tabindex="-1" aria-labelledby="deletePembayaranModalLabel-{{ $data->no_kk }}"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content bg-dark">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Hapus Pembayaran</h5>
+                                                    <button type="button" class="close" data-bs-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Pilih pembayaran yang ingin dihapus:</p>
+                                                    @foreach ($pembayarans->where('no_kk_keluarga', $data->no_kk) as $pembayaran)
+                                                        <form
+                                                            action="{{ route('admin.pembayaran.destroy', ['nama_RT' => $nama_RT, 'pembayaran' => $pembayaran->id]) }}"
+                                                            method="POST">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-danger btn-block mb-2">
+                                                                Hapus Rp
+                                                                {{ number_format($pembayaran->sejumlah, 0, ',', '.') }}
+                                                                pada
+                                                                {{ $pembayaran->tgl_pembayaran->format('d M Y') }}
+                                                            </button>
+                                                        </form>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+
+
+
+
+                                {{-- @foreach ($pembayarans as $data)
+                                    @php
+                                        $createLog = $data->activityLog->where('activity', 'create')->first();
+                                        // $updateLog = $data->activityLog->where('activity', 'update')->last();
+                                    @endphp
+                                    <div class="modal fade" id="activityLog-{{ $data->id }}" tabindex="-1" aria-labelledby="activityLogLabel-{{ $data->id }}"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content bg-dark">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="activityLogLabel-{{ $data->id }}">
+                                                        Aktifitas CRUD</h5>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Dibuat/Diubah oleh :
+                                                            <b>{{ $createLog?->activity ?? 'Tidak Diketahui' }}</b>
+                                                            By
+                                                            <b>{{ $createLog?->user?->name ?? 'Tidak Diketahui' }}</b>
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Waktu Aktifitas :
+                                                            <small>
+                                                                {{ $createLog?->performed_at
+                                                                    ? \Carbon\Carbon::parse($createLog->performed_at)->setTimezone('Asia/Jakarta')->translatedFormat('d F Y H:i:s')
+                                                                    : '-' }}
+                                                            </small>
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Diubah oleh :
+                                                            <b>{{ $updateLog?->activity ?? 'Belum diedit' }}</b>
+                                                            By
+                                                            <b>{{ $updateLog?->user?->name ?? 'Belum diedit' }}</b>
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Waktu Aktifitas :
+                                                            <small>
+                                                                {{ $updateLog?->performed_at
+                                                                    ? \Carbon\Carbon::parse($updateLog->performed_at)->setTimezone('Asia/Jakarta')->translatedFormat('d F Y H:i:s')
+                                                                    : '-' }}
+                                                            </small>
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach --}}
+
                             </div>
                         </div>
                     </div>

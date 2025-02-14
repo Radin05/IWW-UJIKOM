@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('kas_rw_s', function (Blueprint $table) {
+        Schema::create('pengeluaran_kas_rws', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('pembayaran_id')->nullable();
-            $table->decimal('jumlah_kas_rw', 15, 2);
+            $table->decimal('nominal', 15, 2)->nullable();
+            $table->text('keterangan')->nullable();
+            $table->date('tgl_pengeluaran');
+            $table->integer('year');
             $table->timestamps();
-
-            $table->foreign('pembayaran_id')->references('id')->on('pembayarans')->onDelete('cascade');
         });
     }
 
@@ -30,6 +30,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kas_rw_s');
+        Schema::dropIfExists('pengeluaran_kas_rws');
     }
 };
+

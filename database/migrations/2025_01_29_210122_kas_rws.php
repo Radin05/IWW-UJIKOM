@@ -13,15 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('kas_rts', function (Blueprint $table) {
+        Schema::create('kas_rws', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('rt_id')->nullable();
             $table->unsignedBigInteger('pembayaran_id')->nullable();
-            $table->decimal('jumlah_kas_rt', 15, 2);
+            $table->decimal('jumlah_kas_rw', 15, 2);
+            $table->unsignedBigInteger('pengeluaran_kas_rw_id')->nullable();
             $table->timestamps();
 
-            $table->foreign('rt_id')->references('id')->on('rts')->onDelete('cascade');
-            $table->foreign('pembayaran_id')->references('id')->on('pembayarans')->onDelete('cascade');
+            $table->foreign('pengeluaran_kas_rw_id')->references('id')->on('pengeluaran_kas_rws');
+            $table->foreign('pembayaran_id')->references('id')->on('pembayarans')->onDelete('set null');
         });
     }
 
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kas_rts');
+        Schema::dropIfExists('kas_rw_s');
     }
 };

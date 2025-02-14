@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\superadmin;
+namespace App\Http\Controllers\operator;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
@@ -7,6 +7,7 @@ use App\Models\RT;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class ManajemenAdmin extends Controller
 {
@@ -18,7 +19,9 @@ class ManajemenAdmin extends Controller
 
         $rts = RT::orderBy('nama_RT', 'asc')->get();
 
-        return view('superadmin.admin.index', compact('admin', 'rts'));
+        confirmDelete('Hapus Akun Admin', 'Yakin ingin menghapus RT ini?');
+
+        return view('operator.admin.index', compact('admin', 'rts'));
     }
 
     public function store(Request $request)
@@ -47,7 +50,8 @@ class ManajemenAdmin extends Controller
             'performed_at' => now(),
         ]);
 
-        return redirect()->route('superadmin.manajemen-admin.index')->with('success', 'Admin berhasil dibuat.');
+        Alert::success('Success', 'Data Admin Berhasil Dibuat.');
+        return redirect()->route('operator.manajemen-admin.index');
     }
 
     public function update(Request $request, $id)
@@ -60,22 +64,38 @@ class ManajemenAdmin extends Controller
             'rt_id' => "required|string|max:3",
         ]);
 
+        $oldData = $user->replicate();
+        $changes = [];
+
+        if ($oldData->name !== $request->name) {
+            $changes[] = "Nama dari {$oldData->name} menjadi {$request->name}";
+        }
+        if ($oldData->email !== $request->email) {
+            $changes[] = "Email dari {$oldData->email} menjadi {$request->email}";
+        }
+        if ($oldData->rt_id != $request->rt_id) {
+            $changes[] = "RT dari {$oldData->rt_id} menjadi {$request->rt_id}";
+        }
+
         $user->update([
             'name'  => $request->name,
             'email' => $request->email,
             'rt_id' => $request->rt_id,
         ]);
 
-        ActivityLog::create([
-            'user_id'      => auth()->id(),
-            'activity'     => 'update',
-            'description'  => "Mengubah field admin RT dari email {$user->email}",
-            'target_table' => 'users',
-            'target_id'    => $user->id,
-            'performed_at' => now(),
-        ]);
+        if (! empty($changes)) {
+            ActivityLog::create([
+                'user_id'      => auth()->id(),
+                'activity'     => 'update',
+                'description'  => implode('<br>', $changes),
+                'target_table' => 'users',
+                'target_id'    => $user->id,
+                'performed_at' => now(),
+            ]);
+        }
 
-        return redirect()->route('superadmin.manajemen-admin.index')->with('success', 'Admin berhasil diperbarui.');
+        Alert::success('Success', 'Akun Admin ' . $user->id . ' Berhasil Diubah.');
+        return redirect()->route('operator.manajemen-admin.index');
     }
 
     public function destroy($id)
@@ -93,6 +113,7 @@ class ManajemenAdmin extends Controller
             'performed_at' => now(),
         ]);
 
-        return redirect()->route('superadmin.manajemen-admin.index')->with('success', 'Akun Admin RT berhasil dihapus');
+        Alert::success('Success', 'Data Admin ' . $user->id . ' berhasil dibuat.');
+        return redirect()->route('operator.manajemen-admin.index');
     }
 }

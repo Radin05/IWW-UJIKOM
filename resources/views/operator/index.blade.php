@@ -1,27 +1,26 @@
 @extends('layouts.app')
 
-@section('title', 'Super Admin Add Admin RT')
+@section('title', 'Super Admin Add Admin RW')
 
 @section('content')
 
+    <style>
+        .btn-outline-info.dropdown-toggle::after {
+            display: none;
+        }
 
-<style>
-    .btn-outline-info.dropdown-toggle::after {
-        display: none;
-    }
+        .btn-outline-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            border: none;
+        }
 
-    .btn-outline-info {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.5rem;
-        border: none;
-    }
-
-    .icon-ellipsis {
-        font-size: 1.5rem;
-    }
-</style>
+        .icon-ellipsis {
+            font-size: 1.5rem;
+        }
+    </style>
 
     <div class="main-panel mt-4">
         <div class="content-wrapper">
@@ -29,7 +28,7 @@
                 <div class="col-lg-4 grid-margin stretch-card">
                     <div class="card card-tale">
                         <div class="card-body">
-                            <h4 class="card-title">Tambah RT</h4>
+                            <h4 class="card-title">Tambah Admin RW</h4>
                             <p class="card-description">
                                 @if (session('error'))
                                     <script>
@@ -37,8 +36,8 @@
                                     </script>
                                 @endif
                             </p>
-                            <form class="forms-sample" action="{{ route('superadmin.manajemen-admin.store') }}"
-                                method="POST" id="formData">
+                            <form class="forms-sample" action="{{ route('operator.manajemen-superadmin.store') }}"
+                                method="POST">
                                 @csrf
 
                                 <div class="form-group mb-2">
@@ -60,23 +59,6 @@
                                 </div>
 
                                 <div class="form-group mb-2">
-                                    <label for="rt_id" class="form-label">RT</label>
-                                    <select class="form-control @error('rt_id') is-invalid @enderror" id="rt_id"
-                                        name="rt_id" required>
-                                        <option value="" disabled selected>Select RT</option>
-                                        @foreach ($rts as $rt)
-                                            <option value="{{ $rt->id }}"
-                                                {{ old('rt_id') == $rt->id ? 'selected' : '' }}>
-                                                {{ $rt->nama_RT }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('rt_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group mb-2">
                                     <label for="password" class="form-label">Password</label>
                                     <input type="password" class="form-control @error('password') is-invalid @enderror"
                                         id="password" name="password">
@@ -91,7 +73,6 @@
                                         name="password_confirmation">
                                 </div>
 
-                                <button type="button" class="btn btn-danger" onclick="hapusPesan()">Batal</button>
                                 <button type="submit" class="btn btn-success">Simpan</button>
                             </form>
                         </div>
@@ -100,7 +81,7 @@
                 <div class="col-lg-8 grid-margin stretch-card">
                     <div class="card card-tale">
                         <div class="card-body">
-                            <h4 class="text-light text-center">Data Admin</h4>
+                            <h4 class="text-light text-center">Data Admin RW</h4>
 
                             <div class="table-responsive pt-3">
                                 <table class="table table-bordered text-light bg-dark">
@@ -108,17 +89,25 @@
                                         <tr>
                                             <th>Name</th>
                                             <th>Email</th>
-                                            <th>RT</th>
+                                            <th>Dibuat oleh</th>
+                                            <th>Waktu Aktivasi</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($admin as $user)
+                                        @foreach ($superadmin as $user)
+                                            @php
+                                                $log = $user->activityLog->last();
+                                            @endphp
                                             <tr>
                                                 <td>{{ $user->name }}</td>
                                                 <td>{{ $user->email }}</td>
-                                                <td>{{ $user->rt->nama_RT }}</td>
-
+                                                <td>{{ $log?->user?->name ?? 'Tidak Diketahui' }}</td>
+                                                <td>
+                                                    {{ $log?->performed_at
+                                                        ? \Carbon\Carbon::parse($log->performed_at)->setTimezone('Asia/Jakarta')->translatedFormat('d F Y H:i:s')
+                                                        : '-' }}
+                                                </td>
                                                 <td>
                                                     <div class="dropdown">
                                                         <button type="button" class="btn btn-outline-info"
@@ -130,11 +119,12 @@
                                                             aria-labelledby="dropdownMenuIconButton3">
 
                                                             <button class="dropdown-item" data-bs-toggle="modal"
-                                                                data-bs-target="#editAdminModal-{{ $user->id }}">Edit</button>
+                                                                data-bs-target="#editSuperAdminModal-{{ $user->id }}">Edit</button>
 
                                                             <div class="dropdown-divider"></div>
 
-                                                            <form action="{{ route('superadmin.manajemen-admin.destroy', $user->id) }}"
+                                                            <form
+                                                                action="{{ route('operator.manajemen-superadmin.destroy', $user->id) }}"
                                                                 method="POST"
                                                                 onsubmit="return confirm('Apakah Anda yakin ingin menghapus RT ini?')">
                                                                 @csrf
@@ -145,7 +135,7 @@
                                                             <div class="dropdown-divider"></div>
 
                                                             <button class="dropdown-item" data-bs-toggle="modal"
-                                                                data-bs-target="#activityLog">Aktifitas</button>
+                                                                data-bs-target="#activityLog-{{ $user->id }}">Aktifitas</button>
 
                                                         </div>
                                                     </div>
@@ -155,38 +145,36 @@
                                     </tbody>
                                 </table>
 
-                                
-                                @foreach ($admin as $data)
-                                    <div class="modal fade" id="editAdminModal-{{ $data->id }}" tabindex="-1"
-                                        aria-labelledby="editAdminModal-{{ $data->id }}" aria-hidden="true">
+
+                                @foreach ($superadmin as $data)
+                                    <div class="modal fade" id="editSuperAdminModal-{{ $data->id }}" tabindex="-1"
+                                        aria-labelledby="editSuperAdminModal-{{ $data->id }}" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content bg-dark">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="editAdminModal-{{ $data->id }}">
+                                                    <h5 class="modal-title" id="editSuperAdminModal-{{ $data->id }}">
                                                         Edit RT</h5>
                                                 </div>
                                                 <div class="modal-body">
                                                     <form
-                                                        action="{{ route('superadmin.manajemen-admin.update', $data->id) }}"
+                                                        action="{{ route('operator.manajemen-superadmin.update', $data->id) }}"
                                                         method="POST">
                                                         @csrf
                                                         @method('PUT')
 
                                                         <div class="mb-3">
                                                             <label for="name" class="form-label">Nama
-                                                                RT</label>
+                                                                RW</label>
                                                             <input type="text"
                                                                 class="form-control @error('name') is-invalid @enderror"
-                                                                id="name" name="name"
-                                                                value="{{ $data->name }}">
+                                                                id="name" name="name" value="{{ $data->name }}">
                                                             @error('name')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
                                                         </div>
 
                                                         <div class="mb-3">
-                                                            <label for="email"
-                                                                class="form-label">Email</label>
+                                                            <label for="email" class="form-label">Email</label>
                                                             <input type="email"
                                                                 class="form-control @error('email') is-invalid @enderror"
                                                                 id="email" name="email"
@@ -196,23 +184,20 @@
                                                             @enderror
                                                         </div>
 
-                                                        <div class="form-group mb-3">
-                                                            <label for="rt_id-{{ $data->id }}"
-                                                                class="form-label">RT</label>
-                                                            <select
-                                                                class="form-control @error('rt_id') is-invalid @enderror"
-                                                                id="rt_id-{{ $data->id }}" name="rt_id" required>
-                                                                <option value="" disabled
-                                                                    {{ old('rt_id', $data->rt_id) ? '' : 'selected' }}>
-                                                                    Select RT</option>
-                                                                @foreach ($rts as $rt)
-                                                                    <option value="{{ $rt->id }}"
-                                                                        {{ old('rt_id', $data->rt_id) == $rt->id ? 'selected' : '' }}>
-                                                                        {{ $rt->nama_RT }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                            @error('rt_id')
+                                                        <div class="mb-3">
+                                                            <label for="password" class="form-label">Password Baru</label>
+                                                            <input type="password" name="password" id="password"
+                                                                class="form-control @error('password') is-invalid @enderror" required>
+                                                            @error('password')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
+                                                            <input type="password" name="password_confirmation" id="password_confirmation"
+                                                                class="form-control @error('password_confirmation') is-invalid @enderror" required>
+                                                            @error('password_confirmation')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
                                                         </div>
@@ -226,19 +211,17 @@
                                             </div>
                                         </div>
                                     </div>
-                                @endforeach
 
-                                @foreach ($admin as $data)
                                     @php
-                                    $createLog = $data->activityLog->where('activity', 'create')->first();
-                                    $updateLog = $data->activityLog->where('activity', 'update')->last();
+                                        $createLog = $data->activityLog->where('activity', 'create')->first();
+                                        $updateLog = $data->activityLog->where('activity', 'update')->last();
                                     @endphp
-                                    <div class="modal fade" id="activityLog" tabindex="-1" aria-labelledby="activityLog"
-                                        aria-hidden="true">
+                                    <div class="modal fade" id="activityLog-{{ $data->id }}" tabindex="-1"
+                                        aria-labelledby="activityLog-{{ $data->id }}" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content bg-dark">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="activityLog">
+                                                    <h5 class="modal-title" id="activityLog-{{ $data->id }}">
                                                         Aktifitas CRUD</h5>
                                                 </div>
 
@@ -272,6 +255,15 @@
                                                     </div>
 
                                                     <div class="mb-3">
+                                                        <label class="form-label">Deskripsi Perubahan:</label>
+                                                        <small>
+                                                            <ul>
+                                                                {!! $updateLog?->description ?? 'Belum ada perubahan' !!}
+                                                            </ul>
+                                                        </small>
+                                                    </div>
+
+                                                    <div class="mb-3">
                                                         <label class="form-label">Waktu Aktifitas :
                                                             <small>
                                                                 {{ $updateLog?->performed_at
@@ -295,21 +287,15 @@
         </div>
     </div>
 
-
-    <script>
-        function hapusPesan() {
-            document.getElementById('formData').reset();
-        }
-    </script>
-
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 
     @if ($errors->any())
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                var createAdminModal = new bootstrap.Modal(document.getElementById('createAdminModal'));
-                createAdminModal.show();
+                var editSuperAdminModal = new bootstrap.Modal(document.getElementById('editSuperAdminModal'));
+                editSuperAdminModal.show();
             });
         </script>
     @endif

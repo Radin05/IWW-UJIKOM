@@ -9,9 +9,9 @@ class KasRw extends Model
 {
     use HasFactory;
 
-    protected $table = 'kas_rw_s';
+    protected $table = 'kas_rws';
 
-    protected $fillable = ['pembayaran_id', 'jumlah_kas_rw'];
+    protected $fillable = ['pembayaran_id', 'jumlah_kas_rw', 'pengeluaran_kas_rw_id'];
 
     public function pembayaran()
     {
