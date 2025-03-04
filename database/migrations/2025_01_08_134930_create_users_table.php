@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('password');
             $table->string('role')->default('user')->nullable();
             $table->unsignedBigInteger('rt_id')->nullable();
+            $table->string('foto')->nullable();
+            $table->string('kedudukan')->nullable();
             $table->rememberToken();
             $table->timestamps();
 

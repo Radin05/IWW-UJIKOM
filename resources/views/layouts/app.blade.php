@@ -27,10 +27,6 @@
     @endphp
 
     <style>
-        .container-scroller {
-            background: ;
-        }
-
         .ahay a.uhuy {
             display: flex;
             align-items: center;
@@ -71,8 +67,8 @@
                 @auth
                     @if (Auth::user()->role === 'operator')
                         <ul class="nav">
-                            <li class="nav-item ahay {{ request()->routeIs('operator.dashboard') ? 'active' : '' }}">
-                                <a class="nav-link uhuy" href="{{ route('operator.dashboard') }}">
+                            <li class="nav-item ahay {{ request()->routeIs('operator.dashboard.index') ? 'active' : '' }}">
+                                <a class="nav-link uhuy" href="{{ route('operator.dashboard.index') }}">
                                     <i class="icon-grid menu-icon"></i>
                                     <span class="menu-title">Dashboard</span>
                                 </a>
@@ -135,6 +131,18 @@
                                     <span class="menu-title">Kas RW</span>
                                 </a>
                             </li>
+                            <li class="nav-item ahay {{ request()->routeIs('superadmin.kegiatan-rw.index') ? 'active' : '' }}">
+                                <a class="nav-link uhuy" href="{{ route('superadmin.kegiatan-rw.index') }}">
+                                    <i class="icon-paper menu-icon"></i>
+                                    <span class="menu-title">Kegiatan RW-20</span>
+                                </a>
+                            </li>
+                            <li class="nav-item ahay {{ request()->routeIs('superadmin.komentar.index') ? 'active' : '' }}">
+                                <a class="nav-link uhuy" href="{{ route('superadmin.komentar.index') }}">
+                                    <i class="icon-paper menu-icon"></i>
+                                    <span class="menu-title">Komentar</span>
+                                </a>
+                            </li>
                             <li class="nav-item ahay {{ request()->routeIs('superadmin.aktivitas') ? 'active' : '' }}">
                                 <a class="nav-link uhuy" href="{{ route('superadmin.aktivitas') }}">
                                     <i class="icon-paper menu-icon"></i>
@@ -183,6 +191,12 @@
                                         </li>
                                     </ul>
                                 </div>
+                            </li>
+                            <li class="nav-item ahay {{ request()->routeIs('admin.kegiatan.index') ? 'active' : '' }}">
+                                <a class="nav-link uhuy" href="{{ route('admin.kegiatan.index', ['nama_RT' => $nama_RT]) }}">
+                                    <i class="icon-paper menu-icon"></i>
+                                    <span class="menu-title">Kegiatan</span>
+                                </a>
                             </li>
                             <li class="nav-item ahay {{ request()->routeIs('admin.aktivitas') ? 'active' : '' }}">
                                 <a class="nav-link uhuy" href="{{ route('admin.aktivitas', ['nama_RT' => $nama_RT]) }}">

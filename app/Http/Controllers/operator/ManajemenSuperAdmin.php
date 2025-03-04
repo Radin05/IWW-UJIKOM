@@ -6,28 +6,43 @@ use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class ManajemenSuperAdmin extends Controller
 {
     public function index()
     {
-        $superadmin = User::where('role', 'superadmin')->with(['activityLog.user'])->get();
-        return view('operator.index', compact('superadmin'));
+        $superadmin     = User::where('role', 'superadmin')->with(['activityLog.user'])->get();
+        $digunakan      = User::pluck('kedudukan')->toArray();
+        $opsi_kedudukan = ['Ketua RW', 'Wakil Ketua RW', 'Sekretaris RW', 'Bendahara RW', 'Humas RW', 'Keamanan RW'];
+
+        return view('operator.index', compact('superadmin', 'digunakan', 'opsi_kedudukan'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'name'      => 'required|string|max:255',
+            'email'     => 'required|email|unique:users',
+            'password'  => 'required|string|min:8|confirmed',
+            'foto'      => 'nullable|image|mimes:jpeg,png,jpg|max:4000',
+            'kedudukan' => 'nullable|string|max:255',
         ]);
 
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoFile = $request->file('foto');
+            $fileName = time() . '_' . $fotoFile->getClientOriginalName();
+            $fotoPath = $fotoFile->storeAs('uploads/foto-users', $fileName, 'public');
+        }
+
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'role'     => 'superadmin',
+            'name'      => $request->name,
+            'email'     => $request->email,
+            'password'  => Hash::make($request->password),
+            'role'      => 'superadmin',
+            'foto'      => $fotoPath,
+            'kedudukan' => $request->kedudukan,
         ]);
 
         ActivityLog::create([
@@ -45,11 +60,13 @@ class ManajemenSuperAdmin extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::where('role', 'superadmin')->findOrFail($id);
 
         $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'name'      => 'required|string|max:255',
+            'email'     => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'foto'      => 'nullable|image|mimes:jpeg,png,jpg|max:4000',
+            'kedudukan' => 'nullable|string|max:255',
         ]);
 
         $oldData = $user->replicate();
@@ -61,13 +78,27 @@ class ManajemenSuperAdmin extends Controller
         if ($oldData->email !== $request->email) {
             $changes[] = "Email dari {$oldData->email} menjadi {$request->email}";
         }
+        if ($user->kedudukan !== $request->kedudukan) {
+            $changes[] = "Kedudukan dari {$user->kedudukan} menjadi {$request->kedudukan}";
+        }
+
+        // Jika ada foto baru, hapus yang lama dan simpan yang baru
+        if ($request->hasFile('foto')) {
+            if ($user->foto) {
+                Storage::disk('public')->delete($user->foto);
+            }
+            $fotoPath   = $request->file('foto')->store('uploads/foto-users', 'public');
+            $user->foto = $fotoPath;
+            $changes[]  = "Foto diperbarui";
+        }
 
         $user->update([
-            'name'  => $request->name,
-            'email' => $request->email,
+            'name'      => $request->name,
+            'email'     => $request->email,
+            'kedudukan' => $request->kedudukan,
         ]);
 
-        $user->password = Hash::make($request->password);
+        // $user->password = Hash::make($request->password);
         $user->save();
 
         // Simpan log aktivitas jika ada perubahan
@@ -87,7 +118,12 @@ class ManajemenSuperAdmin extends Controller
 
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::where('role', 'superadmin')->findOrFail($id);
+
+        // Hapus foto jika ada
+        if ($user->foto) {
+            Storage::disk('public')->delete($user->foto);
+        }
 
         $user->delete();
 

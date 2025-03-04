@@ -38,6 +38,25 @@
         .form-select {
             width: 100%;
         }
+
+        .warna {
+            background-color: red !important;
+            color: white !important;
+            font-size: 1.1rem;
+            /* Perbesar ukuran font */
+            padding: 10px 15px;
+            /* Tambahkan padding agar lebih besar */
+            border-radius: 5px;
+            /* Tambahkan sudut melengkung */
+            display: block;
+            /* Agar dropdown-item terlihat lebih besar */
+            text-align: center;
+        }
+
+        .warna:hover {
+            background-color: darkred !important;
+            color: white !important;
+        }
     </style>
 
     <div class="main-panel mt-4">
@@ -148,7 +167,8 @@
 
                                                 <!-- Pilih Bulan -->
                                                 <div class="mb-3">
-                                                    <label for="month&year" class="form-label">Pilih Bulan dan Tahun IWW nya</label>
+                                                    <label for="month&year" class="form-label">Pilih Bulan dan Tahun IWW
+                                                        nya</label>
 
                                                     <select class="form-control @error('month') is-invalid @enderror"
                                                         id="month" name="month" required>
@@ -167,7 +187,7 @@
 
                                                     <select class="form-control @error('year') is-invalid @enderror"
                                                         id="year" name="year" required>
-                                                        @for ($i = now()->year; $i >= 2018; $i--)
+                                                        @for ($i = now()->year + 3; $i >= 2020; $i--)
                                                             <option value="{{ $i }}"
                                                                 {{ old('year') == $i ? 'selected' : '' }}>
                                                                 {{ $i }}
@@ -195,7 +215,6 @@
                                 </div>
                             </div>
                             {{-- End Button & Modal Pembayaran --}}
-
 
                             <div class="table-responsive pt-3">
                                 <table class="table table-dark">
@@ -324,7 +343,7 @@
                                                 <div class="modal-body">
                                                     <p>Pilih pembayaran yang ingin dihapus:</p>
                                                     @foreach ($pembayarans->where('no_kk_keluarga', $data->no_kk) as $pembayaran)
-                                                        <form
+                                                        {{-- <form
                                                             action="{{ route('admin.pembayaran.destroy', ['nama_RT' => $nama_RT, 'pembayaran' => $pembayaran->id]) }}"
                                                             method="POST">
                                                             @csrf
@@ -335,7 +354,14 @@
                                                                 pada
                                                                 {{ $pembayaran->tgl_pembayaran->format('d M Y') }}
                                                             </button>
-                                                        </form>
+                                                        </form> --}}
+                                                        <a href="{{ route('admin.pembayaran.destroy', ['nama_RT' => $nama_RT, 'pembayaran' => $pembayaran->id]) }}"
+                                                            class="dropdown-item warna mb-2" data-confirm-delete="true">
+                                                            Hapus Rp
+                                                            {{ number_format($pembayaran->sejumlah, 0, ',', '.') }}
+                                                            pada
+                                                            {{ $pembayaran->tgl_pembayaran->format('d M Y') }}
+                                                        </a>
                                                     @endforeach
                                                 </div>
                                             </div>
@@ -425,5 +451,8 @@
             });
         </script>
     @endif
+
+
+    @include('sweetalert::alert')
 
 @endsection

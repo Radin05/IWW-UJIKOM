@@ -66,8 +66,24 @@
                                     </div>
 
                                     <div class="mb-3">
+                                        <label for="kegiatan_id" class="form-label">Kegiatan</label>
+                                        <select class="form-control @error('kegiatan_id') is-invalid @enderror" name="kegiatan_id">
+                                            <option value="">-- Untuk hal lain --</option>
+                                            @foreach ($kegiatans as $kegiatan)
+                                                <option value="{{ $kegiatan->id }}">
+                                                    {{ $kegiatan->nama_kegiatan }}
+                                                    ( <small>{{ \Carbon\Carbon::parse($kegiatan->tanggal_kegiatan)->format('d M Y') }}</small> )
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('kegiatan_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="mb-3">
                                         <label for="keterangan" class="form-label">Keterangan</label>
-                                        <textarea class="form-control @error('keterangan') is-invalid @enderror" id="keterangan" name="keterangan"
+                                        <textarea class="form-control @error('keterangan') is-invalid @enderror" id="exampleFormControlTextarea1" name="keterangan"
                                             rows="3"></textarea>
                                         @error('keterangan')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -98,6 +114,7 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Nominal</th>
+                                            <th>Kegiatan</th>
                                             <th>Keterangan</th>
                                             <th>Tanggal</th>
                                             <th>Aksi</th>
@@ -108,7 +125,10 @@
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
                                                 <td>Rp {{ number_format($data->nominal, 2, ',', '.') }}</td>
-                                                <td>{{ $data->keterangan }}</td>
+                                                <td>
+                                                    {{ $data->kegiatan ? $data->kegiatan->nama_kegiatan : '-- Untuk hal lain --' }}
+                                                </td>
+                                                <td>{!! $data->keterangan !!}</td>
                                                 <td>{{ $data->tgl_pengeluaran }}</td>
                                                 <td>
                                                     <div class="dropdown">
@@ -166,10 +186,27 @@
                                                         </div>
 
                                                         <div class="mb-3">
+                                                            <label for="kegiatan_id" class="form-label">Kegiatan</label>
+                                                            <select class="form-control @error('kegiatan_id') is-invalid @enderror" name="kegiatan_id">
+                                                                <option value="">-- Untuk hal lain --</option>
+                                                                @foreach ($kegiatans as $kegiatan)
+                                                                <option value="{{ $kegiatan->id }}"
+                                                                    {{ isset($pengeluaran) && $pengeluaran->kegiatan_id == $kegiatan->id ? 'selected' : '' }}>
+                                                                    {{ $kegiatan->nama_kegiatan }}
+                                                                    ( <small>{{ \Carbon\Carbon::parse($kegiatan->tanggal_kegiatan)->format('d M Y') }}</small> )
+                                                                </option>
+                                                                @endforeach
+                                                            </select>
+                                                            @error('kegiatan_id')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+
+                                                        <div class="mb-3">
                                                             <label for="keterangan" class="form-label">Keterangan</label>
                                                             <input type="text"
                                                                 class="form-control @error('keterangan') is-invalid @enderror"
-                                                                id="keterangan" name="keterangan"
+                                                                id="exampleFormControlTextarea1" name="keterangan"
                                                                 value="{{ $data->keterangan }}">
                                                             @error('keterangan')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -273,6 +310,29 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/7.4.1/tinymce.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            tinymce.init({
+                selector: '#exampleFormControlTextarea1',
+                height: 300,
+                toolbar: 'undo redo | bold italic | bullist numlist | alignleft aligncenter alignright | outdent indent',
+                forced_root_block: false, // Mencegah TinyMCE menambahkan elemen HTML seperti <p>
+                valid_elements: '', // Mencegah semua tag HTML
+                setup: function(editor) {
+                    editor.on('init', function() {
+                        editor.getBody().style.width = '100%';
+                    });
+
+                    editor.on('input', function() {
+                        editor.getBody().style.height = 'auto';
+                        editor.getBody().style.height = (editor.getBody().scrollHeight) + 'px';
+                    });
+                },
+            });
+        });
+    </script>
 
     @if ($errors->any())
         <script>

@@ -28,6 +28,8 @@ class KeluargaController extends Controller
         $users = User::whereIn('no_kk_keluarga', $keluargas->pluck('no_kk'))
             ->get();
 
+        confirmDelete('Hapus Data Keluarga', 'Yakin ingin menghapus data keluarga ini?');
+
         return view('admin.keluarga.index', compact('keluargas', 'nama_RT', 'rts', 'users'));
     }
 
@@ -59,8 +61,9 @@ class KeluargaController extends Controller
             'performed_at' => now(),
         ]);
 
-        return redirect()->route('admin.warga.index', ['nama_RT' => $nama_RT])
-            ->with('success', 'Keluarga berhasil ditambahkan');
+        Alert::success('Berhasil', 'Data keluarga berhasil ditambahkan.');
+
+        return redirect()->route('admin.warga.index', ['nama_RT' => $nama_RT]);
     }
 
     public function update(Request $request, $nama_RT, $no_kk)
@@ -95,7 +98,6 @@ class KeluargaController extends Controller
             $changes[] = "No HP dari {$oldData->no_telp} menjadi {$request->no_telp}";
         }
 
-
         $keluargas->update([
             'no_kk'         => $request->no_kk,
             'nama_keluarga' => $request->nama_keluarga,
@@ -104,7 +106,7 @@ class KeluargaController extends Controller
             'rt_id'         => $admin->rt_id,
         ]);
 
-        // if (! empty($changes)) {
+        if (! empty($changes)) {
             ActivityLog::create([
                 'user_id'      => auth()->id(),
                 'activity'     => 'update',
@@ -114,7 +116,9 @@ class KeluargaController extends Controller
                 'target_id'    => $keluargas->no_kk,
                 'performed_at' => now(),
             ]);
-        // }
+        }
+
+        Alert::success('Berhasil', 'Data keluarga berhasil diperbarui.');
 
         return redirect()->route('admin.warga.index', ['nama_RT' => $nama_RT])
             ->with('success', 'Data keluarga berhasil diperbarui');
@@ -145,6 +149,8 @@ class KeluargaController extends Controller
             'target_id'    => $users->id,
             'performed_at' => now(),
         ]);
+
+        Alert::success('Berhasil', 'Akun keluarga berhasil ditambahkan.');
 
         return redirect()->route('admin.warga.index', ['nama_RT' => $nama_RT])
             ->with('success', 'Akun keluarga berhasil ditambahkan.');
@@ -188,7 +194,7 @@ class KeluargaController extends Controller
             ]);
         }
 
-        Alert::success('Success', 'Data RT Berhasil Di Ubah');
+        Alert::success('Success', 'Data'. $oldData . ' berhasil diperbarui.');
 
         return redirect()->route('admin.warga.index', ['nama_RT' => $nama_RT]);
     }
@@ -217,6 +223,9 @@ class KeluargaController extends Controller
             return redirect()->route('admin.warga.index', ['nama_RT' => $nama_RT])
                 ->with('success', 'Data berhasil dihapus.');
         }
+
+        Alert::success('Success', 'Data berhasil dihapus.');
+
 
         return redirect()->route('admin.warga.index', ['nama_RT' => $nama_RT])
             ->with('error', 'Data tidak ditemukan.');

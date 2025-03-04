@@ -24,7 +24,7 @@ class LoginController extends Controller
             return redirect('superadmin/dashboard');
         }
         else {
-            return redirect('/user');
+            return redirect('/user/dashboard');
         }
     }
 

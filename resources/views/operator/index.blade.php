@@ -36,23 +36,45 @@
                                     </script>
                                 @endif
                             </p>
-                            <form class="forms-sample" action="{{ route('operator.manajemen-superadmin.store') }}"
-                                method="POST">
+                            <form class="forms-sample" action="{{ route('operator.manajemen-superadmin.store') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
 
                                 <div class="form-group mb-2">
                                     <label for="name" class="form-label">Nama</label>
-                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                        id="name" name="name" value="{{ old('name') }}">
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}">
                                     @error('name')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
 
                                 <div class="form-group mb-2">
+                                    <label for="foto" class="form-label">Foto</label>
+                                    <input type="file" class="form-control @error('foto') is-invalid @enderror" id="foto" name="foto">
+                                    @error('foto')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="kedudukan" class="form-label">Kedudukan</label>
+                                    <select name="kedudukan" id="kedudukan" class="form-control @error('kedudukan') is-invalid @enderror">
+                                        <option value="">-- Pilih Kedudukan --</option>
+                                        @foreach ($opsi_kedudukan as $kedudukan)
+                                            @if (!in_array($kedudukan, $digunakan))
+                                                <option value="{{ $kedudukan }}" {{ old('kedudukan') == $kedudukan ? 'selected' : '' }}>
+                                                    {{ $kedudukan }}
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                    @error('kedudukan')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group mb-2">
                                     <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                        id="email" name="email" value="{{ old('email') }}">
+                                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}">
                                     @error('email')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -60,8 +82,7 @@
 
                                 <div class="form-group mb-2">
                                     <label for="password" class="form-label">Password</label>
-                                    <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                        id="password" name="password">
+                                    <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password">
                                     @error('password')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -69,8 +90,7 @@
 
                                 <div class="form-group mb-2">
                                     <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
-                                    <input type="password" class="form-control" id="password_confirmation"
-                                        name="password_confirmation">
+                                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
                                 </div>
 
                                 <button type="submit" class="btn btn-success">Simpan</button>
@@ -88,6 +108,8 @@
                                     <thead>
                                         <tr>
                                             <th>Name</th>
+                                            <th>Foto</th>
+                                            <th>Posisi</th>
                                             <th>Email</th>
                                             <th>Dibuat oleh</th>
                                             <th>Waktu Aktivasi</th>
@@ -101,6 +123,16 @@
                                             @endphp
                                             <tr>
                                                 <td>{{ $user->name }}</td>
+                                                <td>
+                                                    @if ($user->foto)
+                                                        <img src="{{ asset('storage/' . $user->foto) }}"
+                                                            alt="Foto {{ $user->name }}"
+                                                            style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
+                                                <td>{{ $user->kedudukan }}</td>
                                                 <td>{{ $user->email }}</td>
                                                 <td>{{ $log?->user?->name ?? 'Tidak Diketahui' }}</td>
                                                 <td>
@@ -158,7 +190,7 @@
                                                 <div class="modal-body">
                                                     <form
                                                         action="{{ route('operator.manajemen-superadmin.update', $data->id) }}"
-                                                        method="POST">
+                                                        method="POST" enctype="multipart/form-data">
                                                         @csrf
                                                         @method('PUT')
 
@@ -167,8 +199,54 @@
                                                                 RW</label>
                                                             <input type="text"
                                                                 class="form-control @error('name') is-invalid @enderror"
-                                                                id="name" name="name" value="{{ $data->name }}">
+                                                                id="name" name="name"
+                                                                value="{{ $data->name }}">
                                                             @error('name')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="foto" class="form-label">Foto Profil</label>
+                                                            <input type="file"
+                                                                class="form-control @error('foto') is-invalid @enderror"
+                                                                id="foto" name="foto" accept="image/*"
+                                                                onchange="previewImage(event)">
+                                                            @error('foto')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                            <div class="mt-2">
+                                                                <img id="foto-preview"
+                                                                    src="{{ asset('storage/' . $data->foto) }}"
+                                                                    alt="Foto Profil"
+                                                                    style="max-width: 150px; display: {{ $data->foto ? 'block' : 'none' }};">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="kedudukan" class="form-label">Kedudukan</label>
+                                                            <select name="kedudukan" id="kedudukan"
+                                                                class="form-control @error('kedudukan') is-invalid @enderror">
+                                                                <option value="Ketua RW"
+                                                                    {{ $data->kedudukan == 'Ketua RW' ? 'selected' : '' }}>
+                                                                    Ketua RW</option>
+                                                                <option value="Wakil Ketua RW"
+                                                                    {{ $data->kedudukan == 'Wakil Ketua RW' ? 'selected' : '' }}>
+                                                                    Wakil Ketua RW</option>
+                                                                <option value="Sekretaris RW"
+                                                                    {{ $data->kedudukan == 'Sekretaris RW' ? 'selected' : '' }}>
+                                                                    Sekretaris RW</option>
+                                                                <option value="Bendahara RW"
+                                                                    {{ $data->kedudukan == 'Bendahara RW' ? 'selected' : '' }}>
+                                                                    Bendahara RW</option>
+                                                                <option value="Humas RW"
+                                                                    {{ $data->kedudukan == 'Humas RW' ? 'selected' : '' }}>
+                                                                    Humas RW</option>
+                                                                <option value="Keamanan RW"
+                                                                    {{ $data->kedudukan == 'Keamanan RW' ? 'selected' : '' }}>
+                                                                    Keamanan RW</option>
+                                                            </select>
+                                                            @error('kedudukan')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
                                                         </div>
@@ -184,23 +262,27 @@
                                                             @enderror
                                                         </div>
 
-                                                        <div class="mb-3">
+                                                        {{-- <div class="mb-3">
                                                             <label for="password" class="form-label">Password Baru</label>
                                                             <input type="password" name="password" id="password"
-                                                                class="form-control @error('password') is-invalid @enderror" required>
+                                                                class="form-control @error('password') is-invalid @enderror"
+                                                                required>
                                                             @error('password')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
                                                         </div>
 
                                                         <div class="mb-3">
-                                                            <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
-                                                            <input type="password" name="password_confirmation" id="password_confirmation"
-                                                                class="form-control @error('password_confirmation') is-invalid @enderror" required>
+                                                            <label for="password_confirmation"
+                                                                class="form-label">Konfirmasi Password</label>
+                                                            <input type="password" name="password_confirmation"
+                                                                id="password_confirmation"
+                                                                class="form-control @error('password_confirmation') is-invalid @enderror"
+                                                                required>
                                                             @error('password_confirmation')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
-                                                        </div>
+                                                        </div> --}}
 
                                                         <button type="button" class="btn btn-secondary"
                                                             data-bs-dismiss="modal">Batal</button>
@@ -299,5 +381,17 @@
             });
         </script>
     @endif
+
+    <script>
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var output = document.getElementById('photo-preview');
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
 
 @endsection

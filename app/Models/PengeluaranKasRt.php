@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,9 +12,9 @@ class PengeluaranKasRt extends Model
 
     protected $fillable = [
         'nominal',
+        'kegiatan_id',
         'keterangan',
         'tgl_pengeluaran',
-        'year',
         'rt_id',
     ];
 
@@ -33,4 +32,10 @@ class PengeluaranKasRt extends Model
     {
         return $this->hasMany(ActivityLog::class, 'target_id', 'id');
     }
+
+    public function kegiatan()
+    {
+        return $this->belongsTo(KegiatanRt::class, 'kegiatan_id');
+    }
+
 }

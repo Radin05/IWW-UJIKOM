@@ -185,14 +185,10 @@
 
                                                             <div class="dropdown-divider"></div>
 
-                                                            <form
-                                                                action="{{ route('admin.warga.destroy', ['nama_RT' => $nama_RT, 'warga' => $data->no_kk]) }}"
-                                                                method="POST"
-                                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="dropdown-item">Hapus</button>
-                                                            </form>
+                                                            <a href="{{ route('admin.warga.destroy', ['nama_RT' => $nama_RT, 'warga' => $data->no_kk]) }}"
+                                                                class="dropdown-item mb-2" data-confirm-delete="true" >
+                                                                Hapus
+                                                            </a>
 
                                                         </div>
                                                     </div>
@@ -558,9 +554,6 @@
             });
         </script>
     @endif
-
-
-
 
     @include('sweetalert::alert')
 

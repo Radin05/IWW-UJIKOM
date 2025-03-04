@@ -9,6 +9,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class PembayaranController extends Controller
 {
@@ -41,6 +42,8 @@ class PembayaranController extends Controller
         $totalPembayaranPerbulan = $pembayarans->sum('sejumlah');
 
         $keluargas = Keluarga::where('rt_id', $admin->rt_id)->get();
+
+        confirmDelete('Hapus Pembayaran', 'Yakin ingin menghapus pembayaran ini?');
 
         return view('admin.keluarga.bayar', compact('pembayarans', 'keluargas', 'nama_RT', 'year', 'month', 'totalPembayaranPerbulan'));
     }
@@ -75,11 +78,13 @@ class PembayaranController extends Controller
             'performed_at' => now(),
         ]);
 
+        Alert::success('Berhasil', 'Pembayaran berhasil ditambahkan.');
+
         return redirect()->route('admin.pembayaran.index', [
             'nama_RT' => $nama_RT,
             'year'    => $pembayaran->year,
             'month'   => $pembayaran->month,
-        ])->with('success', 'Data pembayaran berhasil disimpan!');
+        ]);
     }
 
     public function update(Request $request, $nama_RT, Pembayaran $pembayaran)
@@ -114,11 +119,13 @@ class PembayaranController extends Controller
             'performed_at' => now(),
         ]);
 
+        Alert::success('Berhasil', 'Pembayaran berhasil diperbarui.');
+
         return redirect()->route('admin.pembayaran.index', [
             'nama_RT' => $nama_RT,
             'year'    => $pembayaran->year,
             'month'   => $pembayaran->month,
-        ])->with('success', 'Data pembayaran berhasil diubah!');
+        ]);
     }
 
     public function destroy($nama_RT, Pembayaran $pembayaran)
@@ -149,10 +156,12 @@ class PembayaranController extends Controller
             'performed_at' => now(),
         ]);
 
+        Alert::success('Berhasil', 'Pembayaran berhasil dihapus.');
+
         return redirect()->route('admin.pembayaran.index', [
             'nama_RT' => $nama_RT,
             'year'    => $deletedData->year,
             'month'   => $deletedData->month,
-        ])->with('success', 'Data pembayaran berhasil dihapus!');
+        ]);
     }
 }

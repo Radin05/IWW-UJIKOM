@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('pengeluaran_kas_rts', function (Blueprint $table) {
             $table->id();
             $table->decimal('nominal', 15, 2)->nullable();
+            $table->foreignId('kegiatan_id')->nullable()->constrained('kegiatan_rts')->onDelete('cascade');
             $table->text('keterangan')->nullable();
             $table->date('tgl_pengeluaran');
-            $table->integer('year');
             $table->unsignedBigInteger('rt_id')->nullable();
             $table->timestamps();
 

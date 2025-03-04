@@ -38,7 +38,7 @@
                                 @endif
                             </p>
                             <form class="forms-sample" action="{{ route('operator.manajemen-admin.store') }}" method="POST"
-                                id="formData">
+                                id="formData"  enctype="multipart/form-data">
                                 @csrf
 
                                 <div class="form-group mb-2">
@@ -46,6 +46,31 @@
                                     <input type="text" class="form-control @error('name') is-invalid @enderror"
                                         id="name" name="name" value="{{ old('name') }}">
                                     @error('name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="foto" class="form-label">Foto</label>
+                                    <input type="file" class="form-control @error('foto') is-invalid @enderror" id="foto" name="foto">
+                                    @error('foto')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label for="kedudukan" class="form-label">Kedudukan</label>
+                                    <select name="kedudukan" id="kedudukan" class="form-control @error('kedudukan') is-invalid @enderror">
+                                        <option value="">-- Pilih Kedudukan --</option>
+                                        @foreach ($opsi_kedudukan as $kedudukan)
+                                            @if (!in_array($kedudukan, $dipakai))
+                                                <option value="{{ $kedudukan }}" {{ old('kedudukan') == $kedudukan ? 'selected' : '' }}>
+                                                    {{ $kedudukan }}
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                    @error('kedudukan')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -107,6 +132,8 @@
                                     <thead>
                                         <tr>
                                             <th>Name</th>
+                                            <th>Foto</th>
+                                            <th>Posisi</th>
                                             <th>Email</th>
                                             <th>RT</th>
                                             <th>Actions</th>
@@ -116,6 +143,16 @@
                                         @foreach ($admin as $data)
                                             <tr>
                                                 <td>{{ $data->name }}</td>
+                                                <td>
+                                                    @if ($data->foto)
+                                                        <img src="{{ asset('storage/' . $data->foto) }}"
+                                                            alt="Foto {{ $data->name }}"
+                                                            style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
+                                                <td>{{ $data->kedudukan }}</td>
                                                 <td>{{ $data->email }}</td>
                                                 <td>{{ $data->rt->nama_RT }}</td>
 
@@ -163,7 +200,7 @@
                                                 <div class="modal-body">
                                                     <form
                                                         action="{{ route('operator.manajemen-admin.update', $data->id) }}"
-                                                        method="POST">
+                                                        method="POST" enctype="multipart/form-data">
                                                         @csrf
                                                         @method('PUT')
 
@@ -175,6 +212,51 @@
                                                                 id="name" name="name"
                                                                 value="{{ $data->name }}">
                                                             @error('name')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="foto" class="form-label">Foto Profil</label>
+                                                            <input type="file"
+                                                                class="form-control @error('foto') is-invalid @enderror"
+                                                                id="foto" name="foto" accept="image/*"
+                                                                onchange="previewImage(event)">
+                                                            @error('foto')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                            <div class="mt-2">
+                                                                <img id="foto-preview"
+                                                                    src="{{ asset('storage/' . $data->foto) }}"
+                                                                    alt="Foto Profil"
+                                                                    style="max-width: 150px; display: {{ $data->foto ? 'block' : 'none' }};">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="kedudukan" class="form-label">Kedudukan</label>
+                                                            <select name="kedudukan" id="kedudukan"
+                                                                class="form-control @error('kedudukan') is-invalid @enderror">
+                                                                <option value="Ketua RT"
+                                                                    {{ $data->kedudukan == 'Ketua RT' ? 'selected' : '' }}>
+                                                                    Ketua RT</option>
+                                                                <option value="Wakil Ketua RT"
+                                                                    {{ $data->kedudukan == 'Wakil Ketua RT' ? 'selected' : '' }}>
+                                                                    Wakil Ketua RT</option>
+                                                                <option value="Sekretaris"
+                                                                    {{ $data->kedudukan == 'Sekretaris' ? 'selected' : '' }}>
+                                                                    Sekretaris</option>
+                                                                <option value="Bendahara"
+                                                                    {{ $data->kedudukan == 'Bendahara' ? 'selected' : '' }}>
+                                                                    Bendahara</option>
+                                                                <option value="Humas"
+                                                                    {{ $data->kedudukan == 'Humas' ? 'selected' : '' }}>
+                                                                    Humas</option>
+                                                                <option value="Keamanan"
+                                                                    {{ $data->kedudukan == 'Keamanan' ? 'selected' : '' }}>
+                                                                    Keamanan</option>
+                                                            </select>
+                                                            @error('kedudukan')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
                                                         </div>

@@ -4,9 +4,9 @@ namespace App\Http\Controllers\superadmin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\KasRw;
+use App\Models\KegiatanRw;
 use App\Models\Pembayaran;
 use App\Models\PengeluaranKasRw;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -16,23 +16,25 @@ class KasRwController extends Controller
     public function index()
     {
         $kasRw        = KasRw::first();
-        $pengeluarans = PengeluaranKasRw::orderBy('tgl_pengeluaran', 'asc')->with(['activityLog.user'])->get();
+        $pengeluarans = PengeluaranKasRw::orderBy('tgl_pengeluaran', 'asc')->with(['kegiatan', 'activityLog.user'])->get();
+        $kegiatans     = KegiatanRw::orderBy('tanggal_kegiatan', 'desc')->get();
 
-        return view('superadmin.kas_rw.index', compact('kasRw', 'pengeluarans'));
+        return view('superadmin.kas_rw.index', compact('kasRw', 'pengeluarans', 'kegiatans'));
     }
 
     public function update()
     {
-        // Ambil total pembayaran per keluarga per bulan
+        // Ambil semua pembayaran yang sudah dihitung dalam Kas RT (per keluarga per bulan)
         $totalKas = Pembayaran::selectRaw('no_kk_keluarga, year, month, SUM(sejumlah) as total_bayar')
             ->groupBy('no_kk_keluarga', 'year', 'month')
             ->get();
 
-        // Hitung total yang masuk ke Kas RW (sisa setelah Kas RT mengambil Rp 25.000 per keluarga per bulan)
+        // Hitung total sisa yang masuk ke Kas RW
         $totalKasRW = 0;
 
         foreach ($totalKas as $pembayaran) {
-            $sisa = max($pembayaran->total_bayar - 25000, 0); // Jangan sampai negatif
+            // Ambil sisa setelah dikurangi Kas RT (Rp 25.000 per keluarga per bulan)
+            $sisa = max($pembayaran->total_bayar - 25000, 0); // Pastikan tidak negatif
             $totalKasRW += $sisa;
         }
 
@@ -56,6 +58,7 @@ class KasRwController extends Controller
     {
         $request->validate([
             'nominal'         => 'required|numeric|min:0',
+            'kegiatan_id'     => 'nullable|exists:kegiatan_rws,id',
             'keterangan'      => 'nullable|string',
             'tgl_pengeluaran' => 'required|date',
         ]);
@@ -74,14 +77,13 @@ class KasRwController extends Controller
         }
 
         $tgl_pengeluaran = Carbon::parse($request->tgl_pengeluaran);
-        $year            = $tgl_pengeluaran->year;
 
         // Simpan pengeluaran baru
         $pengeluaran = PengeluaranKasRw::create([
             'nominal'         => $request->nominal,
+            'kegiatan_id'     => $request->kegiatan_id ?: null,
             'keterangan'      => $request->keterangan,
             'tgl_pengeluaran' => $tgl_pengeluaran,
-            'year'            => $year,
         ]);
 
         ActivityLog::create([
@@ -105,6 +107,7 @@ class KasRwController extends Controller
     {
         $request->validate([
             'nominal'         => 'required|numeric|min:0',
+            'kegiatan_id'     => 'nullable|exists:kegiatan_rws,id',
             'keterangan'      => 'nullable|string',
             'tgl_pengeluaran' => 'required|date',
         ]);
@@ -125,13 +128,12 @@ class KasRwController extends Controller
         }
 
         $tgl_pengeluaran = Carbon::parse($request->tgl_pengeluaran);
-        $year            = $tgl_pengeluaran->year;
 
         $pengeluaran->update([
             'nominal'         => $request->nominal,
+            'kegiatan_id'     => $request->kegiatan_id ?: null,
             'keterangan'      => $request->keterangan,
             'tgl_pengeluaran' => $tgl_pengeluaran,
-            'year'            => $year,
         ]);
 
         $kasRW->jumlah_kas_rw = $saldoSetelahUpdate;

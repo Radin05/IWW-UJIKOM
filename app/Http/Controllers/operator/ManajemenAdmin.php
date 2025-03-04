@@ -7,6 +7,7 @@ use App\Models\RT;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class ManajemenAdmin extends Controller
@@ -19,19 +20,31 @@ class ManajemenAdmin extends Controller
 
         $rts = RT::orderBy('nama_RT', 'asc')->get();
 
+        $dipakai      = User::pluck('kedudukan')->toArray();
+        $opsi_kedudukan = ['Ketua RT', 'Wakil Ketua RT', 'Sekretaris', 'Bendahara', 'Humas', 'Keamanan'];
+
         confirmDelete('Hapus Akun Admin', 'Yakin ingin menghapus RT ini?');
 
-        return view('operator.admin.index', compact('admin', 'rts'));
+        return view('operator.admin.index', compact('admin', 'rts', 'dipakai', 'opsi_kedudukan'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'rt_id'    => 'required|exists:rts,id',
+            'name'      => 'required|string|max:255',
+            'email'     => 'required|email|unique:users',
+            'password'  => 'required|string|min:8|confirmed',
+            'rt_id'     => 'required|exists:rts,id',
+            'foto'      => 'nullable|image|mimes:jpeg,png,jpg|max:4000',
+            'kedudukan' => 'nullable|string|max:255',
         ]);
+
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoFile = $request->file('foto');
+            $fileName = time() . '_' . $fotoFile->getClientOriginalName();
+            $fotoPath = $fotoFile->storeAs('uploads/foto-users', $fileName, 'public');
+        }
 
         $user = User::create([
             'name'     => $request->name,
@@ -39,6 +52,8 @@ class ManajemenAdmin extends Controller
             'password' => Hash::make($request->password),
             'role'     => 'admin',
             'rt_id'    => $request->rt_id,
+            'foto'      => $fotoPath,
+            'kedudukan' => $request->kedudukan,
         ]);
 
         ActivityLog::create([
@@ -56,12 +71,14 @@ class ManajemenAdmin extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::where('role', 'admin')->findOrFail($id);
 
         $request->validate([
             'name'  => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'rt_id' => "required|string|max:3",
+            'foto'      => 'nullable|image|mimes:jpeg,png,jpg|max:4000',
+            'kedudukan' => 'nullable|string|max:255',
         ]);
 
         $oldData = $user->replicate();
@@ -76,11 +93,25 @@ class ManajemenAdmin extends Controller
         if ($oldData->rt_id != $request->rt_id) {
             $changes[] = "RT dari {$oldData->rt_id} menjadi {$request->rt_id}";
         }
+        if ($user->kedudukan !== $request->kedudukan) {
+            $changes[] = "Kedudukan dari {$user->kedudukan} menjadi {$request->kedudukan}";
+        }
+
+        // Jika ada foto baru, hapus yang lama dan simpan yang baru
+        if ($request->hasFile('foto')) {
+            if ($user->foto) {
+                Storage::disk('public')->delete($user->foto);
+            }
+            $fotoPath   = $request->file('foto')->store('uploads/foto-users', 'public');
+            $user->foto = $fotoPath;
+            $changes[]  = "Foto diperbarui";
+        }
 
         $user->update([
             'name'  => $request->name,
             'email' => $request->email,
             'rt_id' => $request->rt_id,
+            'kedudukan' => $request->kedudukan,
         ]);
 
         if (! empty($changes)) {
@@ -100,7 +131,7 @@ class ManajemenAdmin extends Controller
 
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::where('role', 'admin')->findOrFail($id);
 
         $user->delete();
 

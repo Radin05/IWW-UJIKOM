@@ -37,5 +37,21 @@ class UsersSeeder extends Seeder
             'role' => 'operator',
         ]);
 
+        User::create([
+            'name' => 'superadmin',
+            'email' => 'superadmin@example.com',
+            'password' => Hash::make('password'),
+            'role' => 'superadmin',
+            'kedudukan' => 'Ketua RW'
+        ]);
+
+        User::create([
+            'name' => 'superadmin',
+            'email' => 'superadmin2@example.com',
+            'password' => Hash::make('password'),
+            'role' => 'superadmin',
+            'kedudukan' => 'Wakil Ketua RW'
+        ]);
+
     }
 }
