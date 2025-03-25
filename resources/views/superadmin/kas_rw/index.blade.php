@@ -46,6 +46,45 @@
                                             @csrf
                                             <button type="submit" class="btn btn-primary mt-5">Perbarui Kas</button>
                                         </form>
+                                        <button type="button" class="btn btn-secondary mt-3" data-bs-toggle="modal"
+                                            data-bs-target="#uangEksternalModal">
+                                            Uang Eksternal
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modal Uang Eksternal -->
+                            <div class="modal fade" id="uangEksternalModal" tabindex="-1"
+                                aria-labelledby="uangEksternalModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content bg-dark">
+                                        <form action="{{ route('superadmin.uang-tambahan-kas.store') }}" method="POST">
+                                            @csrf
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="uangEksternalModalLabel">Tambah Uang Eksternal
+                                                </h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="nominal" class="form-label">Nominal Uang Eksternal</label>
+                                                    <input type="number" class="form-control" id="nominal" name="nominal"
+                                                        required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="keterangan" class="form-label">Keterangan</label>
+                                                    <textarea class="form-control" id="keterangan" name="keterangan" rows="3"></textarea>
+                                                </div>
+                                                <!-- Jika dibutuhkan untuk mengaitkan transaksi ke kas_rw, kamu bisa menyisipkan hidden input -->
+                                                <input type="hidden" name="kas_rw_id"
+                                                    value="{{ $kasRw ? $kasRw->id : '' }}">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Batal</button>
+                                                <button type="submit" class="btn btn-primary">Tambah</button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -67,12 +106,13 @@
 
                                     <div class="mb-3">
                                         <label for="kegiatan_id" class="form-label">Kegiatan</label>
-                                        <select class="form-control @error('kegiatan_id') is-invalid @enderror" name="kegiatan_id">
+                                        <select class="form-control @error('kegiatan_id') is-invalid @enderror"
+                                            name="kegiatan_id">
                                             <option value="">-- Untuk hal lain --</option>
                                             @foreach ($kegiatans as $kegiatan)
                                                 <option value="{{ $kegiatan->id }}">
                                                     {{ $kegiatan->nama_kegiatan }}
-                                                    ( <small>{{ \Carbon\Carbon::parse($kegiatan->tanggal_kegiatan)->format('d M Y') }}</small> )
+                                                    (<small>{{ \Carbon\Carbon::parse($kegiatan->tanggal_kegiatan)->format('d M Y') }}</small>)
                                                 </option>
                                             @endforeach
                                         </select>
@@ -83,8 +123,8 @@
 
                                     <div class="mb-3">
                                         <label for="keterangan" class="form-label">Keterangan</label>
-                                        <textarea class="form-control @error('keterangan') is-invalid @enderror" id="exampleFormControlTextarea1" name="keterangan"
-                                            rows="3"></textarea>
+                                        <textarea class="form-control @error('keterangan') is-invalid @enderror" id="exampleFormControlTextarea1"
+                                            name="keterangan" rows="3"></textarea>
                                         @error('keterangan')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -95,8 +135,8 @@
                                             Pengeluaran Kas</label>
                                         <input type="date"
                                             class="form-control @error('tgl_pengeluaran') is-invalid @enderror"
-                                            id="tgl_pengeluaran" name="tgl_pengeluaran" value="{{ old('tgl_pengeluaran') }}"
-                                            required>
+                                            id="tgl_pengeluaran" name="tgl_pengeluaran"
+                                            value="{{ old('tgl_pengeluaran') }}" required>
                                         @error('tgl_pengeluaran')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -165,7 +205,8 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content bg-dark">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="editPengeluaranModal-{{ $data->id }}">
+                                                    <h5 class="modal-title"
+                                                        id="editPengeluaranModal-{{ $data->id }}">
                                                         Edit Pengeluaran</h5>
                                                 </div>
                                                 <div class="modal-body">
@@ -179,7 +220,8 @@
                                                             <label for="nominal" class="form-label">Nominal</label>
                                                             <input type="number"
                                                                 class="form-control @error('nominal') is-invalid @enderror"
-                                                                id="nominal" name="nominal" value="{{ $data->nominal }}">
+                                                                id="nominal" name="nominal"
+                                                                value="{{ $data->nominal }}">
                                                             @error('nominal')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -187,14 +229,16 @@
 
                                                         <div class="mb-3">
                                                             <label for="kegiatan_id" class="form-label">Kegiatan</label>
-                                                            <select class="form-control @error('kegiatan_id') is-invalid @enderror" name="kegiatan_id">
+                                                            <select
+                                                                class="form-control @error('kegiatan_id') is-invalid @enderror"
+                                                                name="kegiatan_id">
                                                                 <option value="">-- Untuk hal lain --</option>
                                                                 @foreach ($kegiatans as $kegiatan)
-                                                                <option value="{{ $kegiatan->id }}"
-                                                                    {{ isset($pengeluaran) && $pengeluaran->kegiatan_id == $kegiatan->id ? 'selected' : '' }}>
-                                                                    {{ $kegiatan->nama_kegiatan }}
-                                                                    ( <small>{{ \Carbon\Carbon::parse($kegiatan->tanggal_kegiatan)->format('d M Y') }}</small> )
-                                                                </option>
+                                                                    <option value="{{ $kegiatan->id }}"
+                                                                        {{ isset($pengeluaran) && $pengeluaran->kegiatan_id == $kegiatan->id ? 'selected' : '' }}>
+                                                                        {{ $kegiatan->nama_kegiatan }}
+                                                                        (<small>{{ \Carbon\Carbon::parse($kegiatan->tanggal_kegiatan)->format('d M Y') }}</small>)
+                                                                    </option>
                                                                 @endforeach
                                                             </select>
                                                             @error('kegiatan_id')

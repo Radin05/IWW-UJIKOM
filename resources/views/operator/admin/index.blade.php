@@ -38,7 +38,7 @@
                                 @endif
                             </p>
                             <form class="forms-sample" action="{{ route('operator.manajemen-admin.store') }}" method="POST"
-                                id="formData"  enctype="multipart/form-data">
+                                id="formData" enctype="multipart/form-data">
                                 @csrf
 
                                 <div class="form-group mb-2">
@@ -52,7 +52,8 @@
 
                                 <div class="form-group mb-2">
                                     <label for="foto" class="form-label">Foto</label>
-                                    <input type="file" class="form-control @error('foto') is-invalid @enderror" id="foto" name="foto">
+                                    <input type="file" class="form-control @error('foto') is-invalid @enderror"
+                                        id="foto" name="foto">
                                     @error('foto')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -60,14 +61,14 @@
 
                                 <div class="form-group mb-2">
                                     <label for="kedudukan" class="form-label">Kedudukan</label>
-                                    <select name="kedudukan" id="kedudukan" class="form-control @error('kedudukan') is-invalid @enderror">
+                                    <select name="kedudukan" id="kedudukan"
+                                        class="form-control @error('kedudukan') is-invalid @enderror">
                                         <option value="">-- Pilih Kedudukan --</option>
                                         @foreach ($opsi_kedudukan as $kedudukan)
-                                            @if (!in_array($kedudukan, $dipakai))
-                                                <option value="{{ $kedudukan }}" {{ old('kedudukan') == $kedudukan ? 'selected' : '' }}>
-                                                    {{ $kedudukan }}
-                                                </option>
-                                            @endif
+                                            <option value="{{ $kedudukan }}"
+                                                {{ old('kedudukan') == $kedudukan ? 'selected' : '' }}>
+                                                {{ $kedudukan }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     @error('kedudukan')
@@ -147,7 +148,7 @@
                                                     @if ($data->foto)
                                                         <img src="{{ asset('storage/' . $data->foto) }}"
                                                             alt="Foto {{ $data->name }}"
-                                                            style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                                                            style="width: 100px; height: 130px; object-fit: cover; border-radius: 8px;">
                                                     @else
                                                         -
                                                     @endif
@@ -168,6 +169,12 @@
 
                                                             <button class="dropdown-item" data-bs-toggle="modal"
                                                                 data-bs-target="#editAdminModal-{{ $data->id }}">Edit</button>
+
+                                                            <div class="dropdown-divider"></div>
+
+                                                            <button class="dropdown-item" data-bs-toggle="modal"
+                                                                data-bs-target="#updatePasswordModal-{{ $data->id }}">Edit
+                                                                Password</button>
 
                                                             <div class="dropdown-divider"></div>
 
@@ -237,24 +244,12 @@
                                                             <label for="kedudukan" class="form-label">Kedudukan</label>
                                                             <select name="kedudukan" id="kedudukan"
                                                                 class="form-control @error('kedudukan') is-invalid @enderror">
-                                                                <option value="Ketua RT"
-                                                                    {{ $data->kedudukan == 'Ketua RT' ? 'selected' : '' }}>
-                                                                    Ketua RT</option>
-                                                                <option value="Wakil Ketua RT"
-                                                                    {{ $data->kedudukan == 'Wakil Ketua RT' ? 'selected' : '' }}>
-                                                                    Wakil Ketua RT</option>
-                                                                <option value="Sekretaris"
-                                                                    {{ $data->kedudukan == 'Sekretaris' ? 'selected' : '' }}>
-                                                                    Sekretaris</option>
-                                                                <option value="Bendahara"
-                                                                    {{ $data->kedudukan == 'Bendahara' ? 'selected' : '' }}>
-                                                                    Bendahara</option>
-                                                                <option value="Humas"
-                                                                    {{ $data->kedudukan == 'Humas' ? 'selected' : '' }}>
-                                                                    Humas</option>
-                                                                <option value="Keamanan"
-                                                                    {{ $data->kedudukan == 'Keamanan' ? 'selected' : '' }}>
-                                                                    Keamanan</option>
+                                                                @foreach ($opsi_kedudukan as $kedudukan)
+                                                                    <option value="{{ $kedudukan }}"
+                                                                        {{ old('kedudukan') == $kedudukan ? 'selected' : '' }}>
+                                                                        {{ $kedudukan }}
+                                                                    </option>
+                                                                @endforeach
                                                             </select>
                                                             @error('kedudukan')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -297,6 +292,53 @@
                                                             data-bs-dismiss="modal">Batal</button>
                                                         <button type="submit" class="btn btn-primary">Simpan
                                                             Perubahan</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal fade" id="updatePasswordModal-{{ $data->id }}" tabindex="-1"
+                                        aria-labelledby="updatePasswordModal-{{ $data->id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content bg-dark">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="updatePasswordModal-{{ $data->id }}">
+                                                        Ubah Password</h5>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form
+                                                        action="{{ route('operator.manajemen-admin.update-password', $data->id) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        @method('PUT')
+
+                                                        <div class="mb-3">
+                                                            <label for="password" class="form-label">Password Baru</label>
+                                                            <input type="password" name="password" id="password"
+                                                                class="form-control @error('password') is-invalid @enderror"
+                                                                required>
+                                                            @error('password')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="password_confirmation"
+                                                                class="form-label">Konfirmasi Password</label>
+                                                            <input type="password" name="password_confirmation"
+                                                                id="password_confirmation"
+                                                                class="form-control @error('password_confirmation') is-invalid @enderror"
+                                                                required>
+                                                            @error('password_confirmation')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Batal</button>
+                                                        <button type="submit" class="btn btn-primary">Perbarui
+                                                            Password</button>
                                                     </form>
                                                 </div>
                                             </div>

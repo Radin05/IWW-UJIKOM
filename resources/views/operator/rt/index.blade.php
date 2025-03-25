@@ -51,17 +51,6 @@
 
                                 <div id="Fields_nr"></div>
 
-                                <div class="form-group mb-3">
-                                    <label for="nama_jalan" class="form-label">Nama Jalan</label>
-                                    <input type="text" class="form-control @error('nama_jalan') is-invalid @enderror"
-                                        id="nama_jalan" name="nama_jalan" value="{{ old('nama_jalan') }}">
-                                    @error('nama_jalan')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div id="Fields_nj"></div>
-
                                 <div>
                                     <button type="button" class="btn btn-secondary" onclick="addField()">Tambah Lagi</button>
                                 </div>
@@ -84,7 +73,6 @@
                                         <tr>
                                             <th>No</th>
                                             <th>RT</th>
-                                            <th>Nama Jalan</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -93,7 +81,6 @@
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $data->nama_RT }}</td>
-                                                <td>{{ $data->nama_jalan }}</td>
                                                 <td>
                                                     <div class="dropdown">
                                                         <button type="button" class="btn btn-outline-info"
@@ -237,16 +224,6 @@
                 name="additional_fields_nr[]">
             `;
             containerNr.appendChild(inputGroupNr);
-
-            // Menambahkan input untuk 'fields_nj'
-            const containerNj = document.getElementById('Fields_nj');
-            const inputGroupNj = document.createElement('div');
-            inputGroupNj.classList.add('mb-3');
-            inputGroupNj.innerHTML = `
-            <input type="text" class="form-control @error('nama_jalan') is-invalid @enderror"
-                name="additional_fields_nj[]">
-            `;
-            containerNj.appendChild(inputGroupNj);
         }
     </script>
 

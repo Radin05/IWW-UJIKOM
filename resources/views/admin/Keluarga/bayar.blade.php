@@ -167,11 +167,14 @@
 
                                                 <!-- Pilih Bulan -->
                                                 <div class="mb-3">
-                                                    <label for="month&year" class="form-label">Pilih Bulan dan Tahun IWW
-                                                        nya</label>
+                                                    <label for="month&year" class="form-label">Iuran ini untuk bulan dan
+                                                        tahun?</label>
 
                                                     <select class="form-control @error('month') is-invalid @enderror"
                                                         id="month" name="month" required>
+                                                        @php
+                                                            \Carbon\Carbon::setLocale('id'); // Set locale ke Indonesia
+                                                        @endphp
                                                         @for ($i = 1; $i <= 12; $i++)
                                                             <option value="{{ $i }}"
                                                                 {{ old('month') == $i ? 'selected' : '' }}>

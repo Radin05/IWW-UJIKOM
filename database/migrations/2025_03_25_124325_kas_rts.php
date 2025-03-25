@@ -18,10 +18,12 @@ return new class extends Migration
             $table->unsignedBigInteger('rt_id')->nullable();
             $table->unsignedBigInteger('pembayaran_id')->nullable();
             $table->unsignedBigInteger('pengeluaran_kas_rt_id')->nullable();
+            $table->unsignedBigInteger('uang_tambahan_kas_id')->nullable();
             $table->decimal('jumlah_kas_rt', 15, 2);
             $table->timestamps();
 
             $table->foreign('pengeluaran_kas_rt_id')->references('id')->on('pengeluaran_kas_rts');
+            $table->foreign('uang_tambahan_kas_id')->references('id')->on('uang_tambahan_rts');
             $table->foreign('rt_id')->references('id')->on('rts')->onDelete('cascade');
             $table->foreign('pembayaran_id')->references('id')->on('pembayarans')->onDelete('set null');
         });

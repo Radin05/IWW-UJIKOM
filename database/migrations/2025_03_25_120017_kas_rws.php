@@ -18,9 +18,11 @@ return new class extends Migration
             $table->unsignedBigInteger('pembayaran_id')->nullable();
             $table->decimal('jumlah_kas_rw', 15, 2);
             $table->unsignedBigInteger('pengeluaran_kas_rw_id')->nullable();
+            $table->unsignedBigInteger('uang_tambahan_kas_id')->nullable();
             $table->timestamps();
 
             $table->foreign('pengeluaran_kas_rw_id')->references('id')->on('pengeluaran_kas_rws');
+            $table->foreign('uang_tambahan_kas_id')->references('id')->on('uang_tambahans');
             $table->foreign('pembayaran_id')->references('id')->on('pembayarans')->onDelete('set null');
         });
     }
@@ -32,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kas_rw_s');
+        Schema::dropIfExists('kas_rws');
     }
 };

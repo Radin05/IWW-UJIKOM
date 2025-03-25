@@ -20,12 +20,12 @@ class ManajemenAdmin extends Controller
 
         $rts = RT::orderBy('nama_RT', 'asc')->get();
 
-        $dipakai      = User::pluck('kedudukan')->toArray();
+        // $dipakai      = User::pluck('kedudukan')->toArray();
         $opsi_kedudukan = ['Ketua RT', 'Wakil Ketua RT', 'Sekretaris', 'Bendahara', 'Humas', 'Keamanan'];
 
         confirmDelete('Hapus Akun Admin', 'Yakin ingin menghapus RT ini?');
 
-        return view('operator.admin.index', compact('admin', 'rts', 'dipakai', 'opsi_kedudukan'));
+        return view('operator.admin.index', compact('admin', 'rts', 'opsi_kedudukan'));
     }
 
     public function store(Request $request)
@@ -127,6 +127,32 @@ class ManajemenAdmin extends Controller
 
         Alert::success('Success', 'Akun Admin ' . $user->id . ' Berhasil Diubah.');
         return redirect()->route('operator.manajemen-admin.index');
+    }
+
+    public function updatePassword(Request $request, $id)
+    {
+        $user = User::where('role', 'admin')->findOrFail($id);
+
+        $request->validate([
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Simpan log aktivitas
+        ActivityLog::create([
+            'user_id'      => auth()->id(),
+            'activity'     => 'updatepw',
+            'description'  => "Password diperbarui untuk {$user->name}",
+            'target_table' => 'users',
+            'target_id'    => $user->id,
+            'performed_at' => now(),
+        ]);
+
+        Alert::success('Success', 'Password berhasil diperbarui.');
+
+        return redirect()->route('operator.manajemen-superadmin.index')->with('success', 'Password berhasil diperbarui.');
     }
 
     public function destroy($id)

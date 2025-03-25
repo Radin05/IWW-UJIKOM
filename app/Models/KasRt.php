@@ -11,7 +11,7 @@ class KasRt extends Model
 
     protected $table = 'kas_rts';
 
-    protected $fillable = ['rt_id', 'pembayaran_id', 'jumlah_kas_rt', 'pengeluaran_kas_rt_id'];
+    protected $fillable = ['rt_id', 'pembayaran_id', 'jumlah_kas_rt', 'pengeluaran_kas_rt_id', 'uang_tambahan_kas_id'];
 
     public function rt()
     {

@@ -10,7 +10,7 @@ class CreateActivityLogsTable extends Migration
     {
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('activity');
             $table->text('description')->nullable();
             $table->string('target_table')->nullable();
@@ -18,7 +18,7 @@ class CreateActivityLogsTable extends Migration
             $table->timestamp('performed_at');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 

@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class ManajemenSuperAdmin extends Controller
 {
@@ -15,6 +16,8 @@ class ManajemenSuperAdmin extends Controller
         $superadmin     = User::where('role', 'superadmin')->with(['activityLog.user'])->get();
         $digunakan      = User::pluck('kedudukan')->toArray();
         $opsi_kedudukan = ['Ketua RW', 'Wakil Ketua RW', 'Sekretaris RW', 'Bendahara RW', 'Humas RW', 'Keamanan RW'];
+
+        confirmDelete('Hapus akun?', 'Akun akan terhapus dan tidak dapat dipakai lagi');
 
         return view('operator.index', compact('superadmin', 'digunakan', 'opsi_kedudukan'));
     }
@@ -53,6 +56,8 @@ class ManajemenSuperAdmin extends Controller
             'target_id'    => $user->id,
             'performed_at' => now(),
         ]);
+
+        Alert::success('Success', 'Admin RW berhasil dibuat.');
 
         return redirect()->route('operator.manajemen-superadmin.index')
             ->with('success', 'Admin RW berhasil dibuat.');
@@ -113,7 +118,35 @@ class ManajemenSuperAdmin extends Controller
             ]);
         }
 
+        Alert::success('Success', 'data berhasil diperbarui.');
+
         return redirect()->route('operator.manajemen-superadmin.index')->with('success', 'Superadmin berhasil diperbarui.');
+    }
+
+    public function updatePassword(Request $request, $id)
+    {
+        $user = User::where('role', 'superadmin')->findOrFail($id);
+
+        $request->validate([
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Simpan log aktivitas
+        ActivityLog::create([
+            'user_id'      => auth()->id(),
+            'activity'     => 'updatepw',
+            'description'  => "Password diperbarui untuk {$user->name}",
+            'target_table' => 'users',
+            'target_id'    => $user->id,
+            'performed_at' => now(),
+        ]);
+
+        Alert::success('Success', 'Password berhasil diperbarui.');
+
+        return redirect()->route('operator.manajemen-superadmin.index')->with('success', 'Password berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -135,6 +168,8 @@ class ManajemenSuperAdmin extends Controller
             'target_id'    => $id,
             'performed_at' => now(),
         ]);
+
+        Alert::success('Success', 'Superadmin berhasil dihapus.');
 
         return redirect()->route('operator.manajemen-superadmin.index')->with('success', 'Email berhasil dihapus');
     }

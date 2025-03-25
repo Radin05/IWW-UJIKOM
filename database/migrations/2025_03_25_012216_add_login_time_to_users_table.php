@@ -13,20 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('rts', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama_RT')->unique();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->timestamp('login_time')->nullable();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        Schema::dropIfExists('rts');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('login_time');
+        });
     }
+
 };

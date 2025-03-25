@@ -10,7 +10,7 @@ class RT extends Model
 
     protected $table = 'rts';
 
-    protected $fillable = ['nama_RT', 'nama_jalan'];
+    protected $fillable = ['nama_RT'];
 
     public function keluarga()
     {

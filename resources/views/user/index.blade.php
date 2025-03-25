@@ -4,44 +4,44 @@
 
 @section('content')
 
-<style>
-    .team-member {
-        width: 100%;
-        text-align: center;
-    }
-
-    .team-member .member-img {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-    }
-
-    .team-member .member-img img {
-        width: 100%;
-        max-width: 200px; /* Maksimum lebar */
-        height: 250px;
-        object-fit: cover;
-        border-radius: 10px;
-    }
-
-    /* Responsif untuk Tablet */
-    @media (max-width: 768px) {
-        .team-member .member-img img {
-            max-width: 180px;
-            height: 220px;
+    <style>
+        .team-member {
+            width: 100%;
+            text-align: center;
         }
-    }
 
-    /* Responsif untuk Smartphone */
-    @media (max-width: 576px) {
-        .team-member .member-img img {
-            max-width: 160px;
-            height: 200px;
+        .team-member .member-img {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
         }
-    }
 
-</style>
+        .team-member .member-img img {
+            width: 100%;
+            max-width: 200px;
+            /* Maksimum lebar */
+            height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        /* Responsif untuk Tablet */
+        @media (max-width: 768px) {
+            .team-member .member-img img {
+                max-width: 180px;
+                height: 220px;
+            }
+        }
+
+        /* Responsif untuk Smartphone */
+        @media (max-width: 576px) {
+            .team-member .member-img img {
+                max-width: 160px;
+                height: 200px;
+            }
+        }
+    </style>
 
     <header id="header" class="header sticky-top">
 
@@ -70,12 +70,13 @@
                         <li><a href="#hero" class="active">Home</a></li>
                         <li><a href="#about">Tentang</a></li>
                         <li><a href="#pengurus">Pengurus RW</a></li>
-                        <li><a href="#Iuran">Iuran</a></li>
+                        <li><a href="{{ route('warga.iuran') }}">Iuran</a></li>
                         <li><a href="#kegiatan">Kegiatan</a></li>
-                        <li class="dropdown"><a href="#"><span>PROFIL</span> <i
+                        <li><a href="#lokasi">Lokasi</a></li>
+                        <li class="dropdown"><a href="{{ route('warga.profil') }}"><span>PROFIL</span> <i
                                     class="bi bi-chevron-down toggle-dropdown"></i></a>
                             <ul>
-                                <li><a href="#">Profil</a></li>
+                                <li><a href="{{ route('warga.profil') }}">Profil</a></li>
                                 <li>
                                     <a href="{{ route('logout') }}"
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -95,7 +96,6 @@
                                 </li>
                             </ul>
                         </li>
-                        <li><a href="#lokasi">Lokasi</a></li>
                     </ul>
                     <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
                 </nav>
@@ -114,7 +114,7 @@
             <div id="hero-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
 
                 <div class="carousel-item active">
-                    <img src="{{ asset('asset/img/hero-carousel/hero-carousel-1.jpg') }}" alt="">
+                    <img src="{{ asset('asset/img/hero-carousel/gerbang1.jpg') }}" alt="">
                     <div class="container">
                         <h2>Selamat Datang Di Website RR2</h2>
                         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
@@ -124,7 +124,7 @@
                 </div><!-- End Carousel Item -->
 
                 <div class="carousel-item">
-                    <img src="{{ asset('asset/img/hero-carousel/hero-carousel-2.jpg') }}" alt="">
+                    <img src="{{ asset('asset/img/hero-carousel/kegiatan.jpg') }}" alt="">
                     <div class="container">
                         <h2>Lihat Kegiatan Mendatang</h2>
                         <p>Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod
@@ -135,11 +135,12 @@
                 </div><!-- End Carousel Item -->
 
                 <div class="carousel-item">
-                    <img src="{{ asset('asset/img/hero-carousel/hero-carousel-3.jpg') }}" alt="">
+                    <img src="{{ asset('asset/img/hero-carousel/uang.jpg') }}" alt="">
                     <div class="container">
                         <h2>Pengelolaan Iuran Bulanan</h2>
                         <p>Beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
-                            odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+                            odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+                        </p>
                         <a href="#about" class="btn-get-started">Read More</a>
                     </div>
                 </div><!-- End Carousel Item -->
@@ -158,71 +159,81 @@
 
         </section><!-- /Hero Section -->
 
-        
         <!-- Stats Section -->
         <section id="stats" class="stats section">
 
             <div class="container" data-aos="fade-up" data-aos-delay="100">
-        
+
                 <div class="row gy-4">
-        
+
                     <div class="col-lg-3 col-md-6">
                         <div class="stats-item d-flex align-items-center w-100 h-100">
                             <i class="fas fa-user-md flex-shrink-0"></i>
                             <div>
-                            <span>{{ $jumlahwarga }}</span>
-                            <p>Warga</p>
+                                <span>{{ $jumlahwarga }}</span>
+                                <p>Warga RR2</p>
                             </div>
                         </div>
                     </div><!-- End Stats Item -->
-        
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stats-item d-flex align-items-center w-100 h-100">
+                            <i class="fas fa-user-md flex-shrink-0"></i>
+                            <div>
+                                <span>{{ $jumlahWargaRt }}</span>
+                                <p>Warga </p>
+                            </div>
+                        </div>
+                    </div><!-- End Stats Item -->
+
                     <div class="col-lg-3 col-md-6">
                         <div class="stats-item d-flex align-items-center w-100 h-100">
                             <i class="far fa-hospital flex-shrink-0"></i>
                             <div>
                                 <span>{{ $jumlahrt }}</span>
-                            <p>RT</p>
+                                <p>RT</p>
                             </div>
                         </div>
                     </div><!-- End Stats Item -->
-        
+
                     <div class="col-lg-3 col-md-6">
                         <div class="stats-item d-flex align-items-center w-100 h-100">
                             <i class="fas fa-flask flex-shrink-0"></i>
                             <div>
                                 @if (!empty($kasRw) && !empty($kasRw->jumlah_kas_rw))
-                                    <span>
-                                        Rp {{ $kasRw->jumlah_kas_rw }}
-                                    </span>
+                                    <h4>
+                                        Rp {{ number_format($kasRw->jumlah_kas_rw, 0, ',', '.') }}
+                                    </h4>
                                 @else
-                                    <span>
+                                    <h4>
                                         Rp. 0
-                                    </span>
+                                    </h4>
                                 @endif
-                                <p>Research Labs</p>
+                                <p>Jumlah Kas RW saat ini</p>
                             </div>
                         </div>
                     </div><!-- End Stats Item -->
-        
+
                     <div class="col-lg-3 col-md-6">
                         <div class="stats-item d-flex align-items-center w-100 h-100">
                             <i class="fas fa-wallet flex-shrink-0"></i>
                             <div>
-                                @if (!empty($kasRT) && !empty($kasRT->saldo))
-                                    <span>
-                                        Rp {{ number_format($kasRT->saldo, 0, ',', '.') }}
-                                    </span>
+                                @if (!empty($kasRt) && !empty($kasRt->jumlah_kas_rt))
+                                    <h4>
+                                        Rp
+                                        {{ number_format($kasRt->jumlah_kas_rt, 0, ',', '.') }}
+                                    </h4>
                                 @else
-                                    <span>
+                                    <h4>
                                         Rp. 0
-                                    </span>
+                                    </h4>
                                 @endif
-                                <p>Kas RT Anda</p>
+                                <p>Kas RT</p>
                             </div>
                         </div>
                     </div><!-- End Stats Item -->
-                    
-        
+
+
                 </div>
 
             </div>
@@ -234,14 +245,14 @@
 
             <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
-              <h2>Gallery</h2>
-              <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+                <h2>Galeri</h2>
+                <p>"Foto ini bukan sekadar gambar, tapi cerminan cinta dan kebersamaan warga RW 20."</p>
             </div><!-- End Section Title -->
-  
+
             <div class="container" data-aos="fade-up" data-aos-delay="100">
-  
-              <div class="swiper init-swiper">
-                <script type="application/json" class="swiper-config">
+
+                <div class="swiper init-swiper">
+                    <script type="application/json" class="swiper-config">
               {
                 "loop": true,
                 "speed": 600,
@@ -271,73 +282,52 @@
                 }
               }
             </script>
-                <div class="swiper-wrapper align-items-center">
-                  <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{{ asset('asset/img/gallery/gallery-1.jpg') }}"><img src="{{ asset('asset/img/gallery/gallery-1.jpg') }}" class="img-fluid" alt=""></a></div>
-                  <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{{ asset('asset/img/gallery/gallery-2.jpg') }}"><img src="{{ asset('asset/img/gallery/gallery-2.jpg') }}" class="img-fluid" alt=""></a></div>
-                  <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{{ asset('asset/img/gallery/gallery-3.jpg') }}"><img src="{{ asset('asset/img/gallery/gallery-3.jpg') }}" class="img-fluid" alt=""></a></div>
-                  <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{{ asset('asset/img/gallery/gallery-4.jpg') }}"><img src="{{ asset('asset/img/gallery/gallery-4.jpg') }}" class="img-fluid" alt=""></a></div>
-                  <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{{ asset('asset/img/gallery/gallery-5.jpg') }}"><img src="{{ asset('asset/img/gallery/gallery-5.jpg') }}" class="img-fluid" alt=""></a></div>
-                  <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{{ asset('asset/img/gallery/gallery-6.jpg') }}"><img src="{{ asset('asset/img/gallery/gallery-6.jpg') }}" class="img-fluid" alt=""></a></div>
-                  <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{{ asset('asset/img/gallery/gallery-7.jpg') }}"><img src="{{ asset('asset/img/gallery/gallery-7.jpg') }}" class="img-fluid" alt=""></a></div>
-                  <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{{ asset('asset/img/gallery/gallery-8.jpg') }}"><img src="{{ asset('asset/img/gallery/gallery-8.jpg') }}" class="img-fluid" alt=""></a></div>
+                    <div class="swiper-wrapper align-items-center">
+                        <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery"
+                                href="{{ asset('asset/img/gallery/gallery-1.jpg') }}"><img
+                                    src="{{ asset('asset/img/gallery/gallery-1.jpg') }}" class="img-fluid"
+                                    alt=""></a></div>
+                        <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery"
+                                href="{{ asset('asset/img/gallery/g2.jpg') }}"><img
+                                    src="{{ asset('asset/img/gallery/g2.jpg') }}" class="img-fluid" alt=""></a>
+                        </div>
+                        <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery"
+                                href="{{ asset('asset/img/gallery/gallery-3.jpg') }}"><img
+                                    src="{{ asset('asset/img/gallery/gallery-3.jpg') }}" class="img-fluid"
+                                    alt=""></a></div>
+                        <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery"
+                                href="{{ asset('asset/img/gallery/gallery-4.jpg') }}"><img
+                                    src="{{ asset('asset/img/gallery/gallery-4.jpg') }}" class="img-fluid"
+                                    alt=""></a></div>
+                        <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery"
+                                href="{{ asset('asset/img/gallery/gallery-5.jpg') }}"><img
+                                    src="{{ asset('asset/img/gallery/gallery-5.jpg') }}" class="img-fluid"
+                                    alt=""></a></div>
+                        <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery"
+                                href="{{ asset('asset/img/gallery/gallery-6.jpg') }}"><img
+                                    src="{{ asset('asset/img/gallery/gallery-6.jpg') }}" class="img-fluid"
+                                    alt=""></a></div>
+                        <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery"
+                                href="{{ asset('asset/img/gallery/gallery-7.jpg') }}"><img
+                                    src="{{ asset('asset/img/gallery/gallery-7.jpg') }}" class="img-fluid"
+                                    alt=""></a></div>
+                        <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery"
+                                href="{{ asset('asset/img/gallery/gallery-8.jpg') }}"><img
+                                    src="{{ asset('asset/img/gallery/gallery-8.jpg') }}" class="img-fluid"
+                                    alt=""></a></div>
+                    </div>
+                    <div class="swiper-pagination"></div>
                 </div>
-                <div class="swiper-pagination"></div>
-              </div>
-  
+
             </div>
-  
+
         </section><!-- /Gallery Section -->
-
-        <!-- Featured Services Section -->
-        <section id="featured-services" class="featured-services section">
-
-            <div class="container">
-
-                <div class="row gy-4">
-
-                    <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="100">
-                        <div class="service-item position-relative">
-                            <div class="icon"><i class="fas fa-heartbeat icon"></i></div>
-                            <h4><a href="" class="stretched-link">Lorem Ipsum</a></h4>
-                            <p>Voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi</p>
-                        </div>
-                    </div><!-- End Service Item -->
-
-                    <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="200">
-                        <div class="service-item position-relative">
-                            <div class="icon"><i class="fas fa-pills icon"></i></div>
-                            <h4><a href="" class="stretched-link">Sed ut perspici</a></h4>
-                            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore</p>
-                        </div>
-                    </div><!-- End Service Item -->
-
-                    <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="300">
-                        <div class="service-item position-relative">
-                            <div class="icon"><i class="fas fa-thermometer icon"></i></div>
-                            <h4><a href="" class="stretched-link">Magni Dolores</a></h4>
-                            <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia</p>
-                        </div>
-                    </div><!-- End Service Item -->
-
-                    <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="400">
-                        <div class="service-item position-relative">
-                            <div class="icon"><i class="fas fa-dna icon"></i></div>
-                            <h4><a href="" class="stretched-link">Nemo Enim</a></h4>
-                            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis</p>
-                        </div>
-                    </div><!-- End Service Item -->
-
-                </div>
-
-            </div>
-
-        </section><!-- /Featured Services Section -->
 
         <!-- Call To Action Section -->
         <section id="call-to-action" class="call-to-action section accent-background">
 
             <div class="container">
-                <div class="row justify-content-center" data-aos="zoom-in" data-aos-delay="100">
+                <div class="row justify-content-center" data-aos="zoom-in" data-aos-delay="50">
                     <div class="col-xl-10">
                         <div class="text-center">
                             <h3>In an emergency? Need help now?</h3>
@@ -358,42 +348,44 @@
             <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
                 <h2>About Us<br></h2>
-                <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+                <p>RW 20 Rancamanyar Regency 2 adalah lingkungan yang nyaman dan harmonis, di mana kebersamaan serta gotong
+                    royong menjadi dasar dalam membangun komunitas yang rukun dan sejahtera.</p>
             </div><!-- End Section Title -->
 
             <div class="container">
 
                 <div class="row gy-4">
                     <div class="col-lg-6 position-relative align-self-start" data-aos="fade-up" data-aos-delay="100">
-                        <img src="{{ asset('asset/img/about.jpg') }}" class="img-fluid" alt="">
+                        <img src="{{ asset('asset/img/about.jpg') }}" class="img-fluid" alt="Tentang RW 20">
                         <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
                     </div>
                     <div class="col-lg-6 content" data-aos="fade-up" data-aos-delay="200">
-                        <h3>Voluptatem dignissimos provident quasi corporis voluptates sit assumenda.</h3>
+                        <h3>Membangun Kebersamaan dan Keharmonisan Warga</h3>
                         <p class="fst-italic">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                            labore et dolore
-                            magna aliqua.
+                            Sebagai warga RW 20, kami menjunjung tinggi nilai kebersamaan dan kepedulian antar tetangga.
+                            Dengan saling menghormati, menjaga kebersihan lingkungan, serta aktif dalam kegiatan sosial,
+                            kami menciptakan suasana yang aman dan nyaman bagi semua.
                         </p>
                         <ul>
-                            <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo
-                                    consequat.</span></li>
-                            <li><i class="bi bi-check2-all"></i> <span>Duis aute irure dolor in reprehenderit in voluptate
-                                    velit.</span></li>
-                            <li><i class="bi bi-check2-all"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo
-                                    consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda
-                                    mastiro dolore eu fugiat nulla pariatur.</span></li>
+                            <li><i class="bi bi-check2-all"></i> <span>Saling menghormati dalam perbedaan dan
+                                    pendapat.</span></li>
+                            <li><i class="bi bi-check2-all"></i> <span>Menjaga kebersihan demi lingkungan yang sehat dan
+                                    nyaman.</span></li>
+                            <li><i class="bi bi-check2-all"></i> <span>Membangun komunikasi yang baik untuk mempererat
+                                    hubungan antar warga.</span></li>
+                            <li><i class="bi bi-check2-all"></i> <span>Membantu sesama dalam semangat gotong royong.</span>
+                            </li>
+                            <li><i class="bi bi-check2-all"></i> <span>Menjaga keamanan dengan peduli terhadap lingkungan
+                                    sekitar.</span></li>
                         </ul>
                         <p>
-                            Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
-                            in voluptate
-                            velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                            proident
+                            RW 20 Rancamanyar Regency 2 – <strong>Bersama Kita Harmonis, Bersatu Kita Kuat!</strong>
                         </p>
                     </div>
                 </div>
 
             </div>
+
 
         </section>
 
@@ -406,46 +398,47 @@
                             src="{{ asset('asset/img/features.jpg') }}" alt=""></div>
 
                     <div class="col-lg-5 d-flex flex-column justify-content-center" data-aos="fade-up"
-                        data-aos-delay="200">
-                        <h3>Enim quis est voluptatibus aliquid consequatur fugiat</h3>
-                        <p>Esse voluptas cumque vel exercitationem. Reiciendis est hic accusamus. Non ipsam et sed minima
-                            temporibus laudantium. Soluta voluptate sed facere corporis dolores excepturi</p>
+                        data-aos-delay="100">
+                        <h3>Membangun Lingkungan yang Nyaman dan Harmonis</h3>
+                        <p>RW 20 Rancamanyar Regency 2 hadir sebagai komunitas yang menjunjung tinggi nilai kebersamaan,
+                            gotong royong, dan kepedulian sosial. Kami berkomitmen untuk menciptakan lingkungan yang aman,
+                            nyaman, dan penuh kekeluargaan bagi seluruh warga.</p>
 
-                        <div class="icon-box d-flex position-relative" data-aos="fade-up" data-aos-delay="300">
+                        <div class="icon-box d-flex position-relative" data-aos="fade-up" data-aos-delay="100">
                             <i class="fa-solid fa-hand-holding-medical flex-shrink-0"></i>
                             <div>
-                                <h4><a href="" class="stretched-link">Lorem Ipsum</a></h4>
-                                <p>Voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint
-                                    occaecati cupiditate non provident</p>
+                                <h4><a href="" class="stretched-link">Kebersamaan Warga</a></h4>
+                                <p>Kami mempererat hubungan antarwarga dengan berbagai kegiatan sosial yang membangun
+                                    solidaritas dan keharmonisan.</p>
                             </div>
-                        </div><!-- End Icon Box -->
+                        </div>
 
-                        <div class="icon-box d-flex position-relative" data-aos="fade-up" data-aos-delay="400">
+                        <div class="icon-box d-flex position-relative" data-aos="fade-up" data-aos-delay="100">
                             <i class="fa-solid fa-suitcase-medical flex-shrink-0"></i>
                             <div>
-                                <h4><a href="" class="stretched-link">Nemo Enim</a></h4>
-                                <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
-                                    voluptatum deleniti atque</p>
+                                <h4><a href="" class="stretched-link">Lingkungan Bersih</a></h4>
+                                <p>Komitmen menjaga kebersihan dan kelestarian lingkungan agar RW 20 tetap hijau, sehat, dan
+                                    nyaman untuk semua.</p>
                             </div>
-                        </div><!-- End Icon Box -->
+                        </div>
 
-                        <div class="icon-box d-flex position-relative" data-aos="fade-up" data-aos-delay="500">
+                        <div class="icon-box d-flex position-relative" data-aos="fade-up" data-aos-delay="100">
                             <i class="fa-solid fa-staff-snake flex-shrink-0"></i>
                             <div>
-                                <h4><a href="" class="stretched-link">Dine Pad</a></h4>
-                                <p>Explicabo est voluptatum asperiores consequatur magnam. Et veritatis odit. Sunt aut
-                                    deserunt minus aut eligendi omnis</p>
+                                <h4><a href="" class="stretched-link">Keamanan Terjaga</a></h4>
+                                <p>Dengan sistem keamanan yang baik dan kepedulian antarwarga, kami menciptakan lingkungan
+                                    yang aman dan tenteram.</p>
                             </div>
-                        </div><!-- End Icon Box -->
+                        </div>
 
-                        <div class="icon-box d-flex position-relative" data-aos="fade-up" data-aos-delay="600">
+                        <div class="icon-box d-flex position-relative" data-aos="fade-up" data-aos-delay="100">
                             <i class="fa-solid fa-lungs flex-shrink-0"></i>
                             <div>
-                                <h4><a href="" class="stretched-link">Tride clov</a></h4>
-                                <p>Est voluptatem labore deleniti quis a delectus et. Saepe dolorem libero sit non
-                                    aspernatur odit amet. Et eligendi</p>
+                                <h4><a href="" class="stretched-link">Partisipasi Aktif</a></h4>
+                                <p>Setiap warga memiliki peran penting dalam memajukan RW 20 melalui berbagai kegiatan
+                                    komunitas dan gotong royong.</p>
                             </div>
-                        </div><!-- End Icon Box -->
+                        </div>
 
                     </div>
                 </div>
@@ -461,28 +454,30 @@
             <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
                 <h2>PENGURUS RW</h2>
-                <p>Pengurus RW 20  Rancamanyar Regency 2 tahun {{$year}}</p>
+                <p>Pengurus RW 20 Rancamanyar Regency 2 tahun {{ $year }}</p>
             </div><!-- End Section Title -->
 
             <div class="container">
                 <div class="row gy-4">
 
                     @foreach ($superadmins as $admin)
-                    <div class="col-lg-3 col-md-4 col-sm-6 col-12 d-flex align-items-stretch justify-content-center" data-aos="fade-up" data-aos-delay="100">
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-12 d-flex align-items-stretch justify-content-center"
+                            data-aos="fade-up" data-aos-delay="100">
                             <div class="team-member">
                                 <div class="member-img">
-                                    <img src="{{ asset('storage/' . $admin->foto) }}" class="img-fluid" alt="{{ $admin->name }}">
-                                        <div class="social">
-                                            <a href="#"><i class="bi bi-twitter-x"></i></a>
-                                            <a href="#"><i class="bi bi-facebook"></i></a>
-                                            <a href="#"><i class="bi bi-instagram"></i></a>
-                                            <a href="#"><i class="bi bi-linkedin"></i></a>
-                                        </div>
+                                    <img src="{{ asset('storage/' . $admin->foto) }}" class="img-fluid"
+                                        alt="{{ $admin->name }}">
+                                    <div class="social">
+                                        <a href="#"><i class="bi bi-twitter-x"></i></a>
+                                        <a href="#"><i class="bi bi-facebook"></i></a>
+                                        <a href="#"><i class="bi bi-instagram"></i></a>
+                                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                                    </div>
                                 </div>
-                            <div class="member-info">
-                                <h4>{{ $admin->name }}</h4>
-                                <span>{{ $admin->kedudukan }}</span>
-                            </div>
+                                <div class="member-info">
+                                    <h4>{{ $admin->name }}</h4>
+                                    <span>{{ $admin->kedudukan }}</span>
+                                </div>
                             </div>
                         </div>
                     @endforeach
@@ -492,324 +487,158 @@
 
         </section><!-- Pengurus Section -->
 
-        <!-- Tabs Section -->
-        <section id="kegiatan" class="doctor section light-background">
+        <!-- Kegiatan Mendatang Section -->
+        <section id="kegiatan" class="faq section light-background">
 
             <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
                 <h2>Kegiatan Mendatang</h2>
-                <p>Berikut adalah daftar kegiatan yang telah dijadwalkan.</p>
+                <p>Berikut adalah daftar kegiatan RW yang telah dijadwalkan.</p>
             </div><!-- End Section Title -->
 
-            <div class="container" data-aos="fade-up" data-aos-delay="100">
+            <div class="container">
 
-                <div class="row">
-                    <div class="col-lg-3">
-                        <ul class="nav nav-tabs flex-column">
-                            <li class="nav-item">
-                                <a class="nav-link active show" data-bs-toggle="tab" href="#tabs-rapat">Rapat</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#tabs-kerja-bakti">Kerja Bakti</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#tabs-kegiatan">Kegiatan</a>
-                            </li>
-                        </ul>
-                    </div>
+                <div class="row justify-content-center">
 
-                    <div class="col-lg-9 mt-4 mt-lg-0">
-                        <div class="tab-content">
+                    <div class="col-lg-10" data-aos="fade-up" data-aos-delay="100">
 
-                            <!-- Tab Rapat -->
-                            <div class="tab-pane active show" id="tabs-rapat">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <h3>Rapat</h3>
-                                        @php
-                                            $carbon = \Carbon\Carbon::now('Asia/Jakarta');
-                                            $rapatList = $kegiatanRw->where('status', 'Rapat')->whereBetween('tanggal_kegiatan', [$carbon, $carbon->copy()->addDays(7)]);
-                                        @endphp
-                                        @if ($rapatList->isEmpty())
-                                            <p class="text-center text-danger">Tidak ada jadwal rapat.</p>
-                                        @else
-                                            <div class="row gap-3">
-                                                @foreach ($rapatList as $data)
-                                                    <div class="col-md-4 mb-3">
-                                                        <div class="card border-0 shadow-sm" style="background: rgba(147, 136, 136, 0.151);">
-                                                            <div class="card-body">
-                                                                <h5 class="mb-1">{{ $data->nama_kegiatan }}</h5>
-                                                                <hr>
-                                                                <span class="mb-1">{!! $data->deskripsi !!}</span>
-                                                                <hr>
-                                                                <small class="mb-1 text-dark"><strong>Tanggal:</strong> {{ $data->tanggal_kegiatan }} | <strong>Jam:</strong> {{ $data->jam_kegiatan }}</small>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                        <div class="faq-container">
 
-                                                    @if ($loop->iteration % 3 == 0 && !$loop->last)
-                                                        <div class="col-md-12"><hr class="border border-dark"></div>
-                                                    @endif
+                            @php
+                                $carbon = \Carbon\Carbon::now('Asia/Jakarta');
+                                $kegiatanList = $kegiatanRw->whereBetween('tanggal_kegiatan', [
+                                    $carbon,
+                                    $carbon->copy()->addDays(7),
+                                ]);
+                            @endphp
 
-                                                @endforeach
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Tab Kerja Bakti -->
-                            <div class="tab-pane" id="tabs-kerja-bakti">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <h3>Kerja Bakti</h3>
-                                        @php
-                                            $carbon = \Carbon\Carbon::now('Asia/Jakarta');
-                                            $kerjaBaktiList = $kegiatanRw->where('status', 'Kerja bakti')->whereBetween('tanggal_kegiatan', [$carbon, $carbon->copy()->addDays(7)]);
-                                        @endphp
-                                        @if ($kerjaBaktiList->isEmpty())
-                                            <p class="text-center text-danger">Tidak ada jadwal kerja bakti.</p>
-                                        @else
-                                        <div class="row gap-3">
-                                            @foreach ($kerjaBaktiList as $data)
-                                                <div class="col-md-4 mb-3">
-                                                    <div class="card border-0 shadow-sm" style="background: rgba(147, 136, 136, 0.151);">
-                                                        <div class="card-body">
-                                                            <h5 class="mb-1">{{ $data->nama_kegiatan }}</h5>
-                                                            <hr>
-                                                            <span class="mb-1">{!! $data->deskripsi !!}</span>
-                                                            <hr>
-                                                            <small class="mb-1 text-dark"><strong>Tanggal:</strong> {{ $data->tanggal_kegiatan }} | <strong>Jam:</strong> {{ $data->jam_kegiatan }}</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                @if ($loop->iteration % 3 == 0 && !$loop->last)
-                                                    <div class="col-md-12"><hr class="border border-dark"></div>
-                                                @endif
-
-                                            @endforeach
+                            @if ($kegiatanList->isEmpty())
+                                <p class="text-center text-danger">Tidak ada kegiatan RW mendatang.</p>
+                            @else
+                                @foreach ($kegiatanList as $data)
+                                    <div class="faq-item">
+                                        <h4>{{ $data->nama_kegiatan }}</h4>
+                                        <p>
+                                            <small><strong>Tanggal:</strong> {{ $data->tanggal_kegiatan }} |
+                                                <strong>Jam:</strong> {{ $data->jam_kegiatan }}</small>
+                                        </p>
+                                        <div class="faq-content">
+                                            <p>{!! $data->deskripsi !!}</p>
                                         </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
+                                        <i class="faq-toggle bi bi-chevron-right"></i>
+                                    </div><!-- End Faq item -->
+                                @endforeach
+                            @endif
 
-                            <!-- Tab Kegiatan -->
-                            <div class="tab-pane" id="tabs-kegiatan">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <h3>Kegiatan</h3>
-                                        @php
-                                            $carbon = \Carbon\Carbon::now('Asia/Jakarta');
-                                            $kegiatanList = $kegiatanRw->where('status', 'Kegiatan')->whereBetween('tanggal_kegiatan', [$carbon, $carbon->copy()->addDays(7)]);
-                                        @endphp
-                                        @if ($kegiatanList->isEmpty())
-                                            <p class="text-center text-danger">Tidak ada kegiatan lainnya.</p>
-                                        @else
-                                        <div class="row gap-3">
-                                            @foreach ($kegiatanList as $data)
-                                                <div class="col-md-4 mb-3">
-                                                    <div class="card border-0 shadow-sm" style="background: rgba(147, 136, 136, 0.151);">
-                                                        <div class="card-body">
-                                                            <h5 class="mb-1">{{ $data->nama_kegiatan }}</h5>
-                                                            <hr>
-                                                            <span class="mb-1">{!! $data->deskripsi !!}</span>
-                                                            <hr>
-                                                            <small class="mb-1 text-dark"><strong>Tanggal:</strong> {{ $data->tanggal_kegiatan }} | <strong>Jam:</strong> {{ $data->jam_kegiatan }}</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                        </div>
 
-                                                @if ($loop->iteration % 3 == 0 && !$loop->last)
-                                                    <div class="col-md-12"><hr class="border border-dark"></div>
-                                                @endif
+                    </div><!-- End FAQ Column -->
 
-                                            @endforeach
-                                        </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div> <!-- End Tab Content -->
-                    </div>
                 </div>
 
             </div>
 
-        </section><!-- /Tabs Section -->
+        </section><!-- /Kegiatan Mendatang Section -->
 
-        <!-- Faq Section -->
-        <section id="faq" class="faq section light-background">
-
-          <!-- Section Title -->
-          <div class="container section-title" data-aos="fade-up">
-            <h2>Frequently Asked Questions</h2>
-            <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-          </div><!-- End Section Title -->
-
-          <div class="container">
-
-            <div class="row justify-content-center">
-
-              <div class="col-lg-10" data-aos="fade-up" data-aos-delay="100">
-
-                <div class="faq-container">
-
-                  <div class="faq-item">
-                    <h3>Non consectetur a erat nam at lectus urna duis?</h3>
-                    <div class="faq-content">
-                      <p>Feugiat pretium nibh ipsum consequat. Tempus iaculis urna id volutpat lacus laoreet non curabitur gravida. Venenatis lectus magna fringilla urna porttitor rhoncus dolor purus non.</p>
-                    </div>
-                    <i class="faq-toggle bi bi-chevron-right"></i>
-                  </div><!-- End Faq item-->
-
-                  <div class="faq-item">
-                    <h3>Feugiat scelerisque varius morbi enim nunc faucibus?</h3>
-                    <div class="faq-content">
-                      <p>Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi. Id interdum velit laoreet id donec ultrices. Fringilla phasellus faucibus scelerisque eleifend donec pretium. Est pellentesque elit ullamcorper dignissim. Mauris ultrices eros in cursus turpis massa tincidunt dui.</p>
-                    </div>
-                    <i class="faq-toggle bi bi-chevron-right"></i>
-                  </div><!-- End Faq item-->
-
-                  <div class="faq-item">
-                    <h3>Dolor sit amet consectetur adipiscing elit pellentesque?</h3>
-                    <div class="faq-content">
-                      <p>Eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci. Faucibus pulvinar elementum integer enim. Sem nulla pharetra diam sit amet nisl suscipit. Rutrum tellus pellentesque eu tincidunt. Lectus urna duis convallis convallis tellus. Urna molestie at elementum eu facilisis sed odio morbi quis</p>
-                    </div>
-                    <i class="faq-toggle bi bi-chevron-right"></i>
-                  </div><!-- End Faq item-->
-
-                  <div class="faq-item">
-                    <h3>Ac odio tempor orci dapibus. Aliquam eleifend mi in nulla?</h3>
-                    <div class="faq-content">
-                      <p>Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi. Id interdum velit laoreet id donec ultrices. Fringilla phasellus faucibus scelerisque eleifend donec pretium. Est pellentesque elit ullamcorper dignissim. Mauris ultrices eros in cursus turpis massa tincidunt dui.</p>
-                    </div>
-                    <i class="faq-toggle bi bi-chevron-right"></i>
-                  </div><!-- End Faq item-->
-
-                  <div class="faq-item">
-                    <h3>Tempus quam pellentesque nec nam aliquam sem et tortor?</h3>
-                    <div class="faq-content">
-                      <p>Molestie a iaculis at erat pellentesque adipiscing commodo. Dignissim suspendisse in est ante in. Nunc vel risus commodo viverra maecenas accumsan. Sit amet nisl suscipit adipiscing bibendum est. Purus gravida quis blandit turpis cursus in</p>
-                    </div>
-                    <i class="faq-toggle bi bi-chevron-right"></i>
-                  </div><!-- End Faq item-->
-
-                  <div class="faq-item">
-                    <h3>Perspiciatis quod quo quos nulla quo illum ullam?</h3>
-                    <div class="faq-content">
-                      <p>Enim ea facilis quaerat voluptas quidem et dolorem. Quis et consequatur non sed in suscipit sequi. Distinctio ipsam dolore et.</p>
-                    </div>
-                    <i class="faq-toggle bi bi-chevron-right"></i>
-                  </div><!-- End Faq item-->
-
-                </div>
-
-              </div><!-- End Faq Column-->
-
-            </div>
-
-          </div>
-
-        </section><!-- /Faq Section -->
-
-        <!-- Contact Section -->
+        <!-- location Section -->
         <section id="lokasi" class="contact section">
 
-          <!-- Section Title -->
-          <div class="container section-title" data-aos="fade-up">
-            <h2>Location</h2>
-            <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-          </div><!-- End Section Title -->
+            <!-- Section Title -->
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Lokasi</h2>
+                <p>Rancamanyar Regency II, Desa Rancamanyar, Kec.Baleendah, Kab.Bandung, Prov.Jawa Barat</p>
+            </div><!-- End Section Title -->
 
-          <div class="mb-5" data-aos="fade-up" data-aos-delay="200">
-            <iframe style="border:0; width: 100%; height: 370px;" src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d48389.78314118045!2d-74.006138!3d40.710059!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3bda30d%3A0xb89d1fe6bc499443!2sDowntown%20Conference%20Center!5e0!3m2!1sen!2sus!4v1676961268712!5m2!1sen!2sus" frameborder="0" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-          </div><!-- End Google Maps -->
+            <div class="mb-5" data-aos="fade-up" data-aos-delay="200">
+                <iframe style="border:0; width: 100%; height: 370px;"
+                    src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d48389.78314118045!2d-74.006138!3d40.710059!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3bda30d%3A0xb89d1fe6bc499443!2sDowntown%20Conference%20Center!5e0!3m2!1sen!2sus!4v1676961268712!5m2!1sen!2sus"
+                    frameborder="0" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div><!-- End Google Maps -->
 
-        </section><!-- /Contact Section -->
+        </section><!-- /location Section -->
 
     </main>
 
     <footer id="footer" class="footer light-background">
 
         <div class="container footer-top">
-          <div class="row gy-4">
-            <div class="col-lg-4 col-md-6 footer-about">
-              <a href="index.html" class="logo d-flex align-items-center">
-                <span class="sitename">Medicio</span>
-              </a>
-              <div class="footer-contact pt-3">
-                <p>A108 Adam Street</p>
-                <p>New York, NY 535022</p>
-                <p class="mt-3"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p>
-                <p><strong>Email:</strong> <span>info@example.com</span></p>
-              </div>
-              <div class="social-links d-flex mt-4">
-                <a href=""><i class="bi bi-twitter-x"></i></a>
-                <a href=""><i class="bi bi-facebook"></i></a>
-                <a href=""><i class="bi bi-instagram"></i></a>
-                <a href=""><i class="bi bi-linkedin"></i></a>
-              </div>
-            </div>
+            <div class="row gy-4">
+                <div class="col-lg-4 col-md-6 footer-about">
+                    <a href="index.html" class="logo d-flex align-items-center">
+                        <span class="sitename">Medicio</span>
+                    </a>
+                    <div class="footer-contact pt-3">
+                        <p>A108 Adam Street</p>
+                        <p>New York, NY 535022</p>
+                        <p class="mt-3"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p>
+                        <p><strong>Email:</strong> <span>info@example.com</span></p>
+                    </div>
+                    <div class="social-links d-flex mt-4">
+                        <a href=""><i class="bi bi-twitter-x"></i></a>
+                        <a href=""><i class="bi bi-facebook"></i></a>
+                        <a href=""><i class="bi bi-instagram"></i></a>
+                        <a href=""><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
 
-            <div class="col-lg-2 col-md-3 footer-links">
-              <h4>Useful Links</h4>
-              <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">About us</a></li>
-                <li><a href="#">Services</a></li>
-                <li><a href="#">Terms of service</a></li>
-                <li><a href="#">Privacy policy</a></li>
-              </ul>
-            </div>
+                <div class="col-lg-2 col-md-3 footer-links">
+                    <h4>Useful Links</h4>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">About us</a></li>
+                        <li><a href="#">Services</a></li>
+                        <li><a href="#">Terms of service</a></li>
+                        <li><a href="#">Privacy policy</a></li>
+                    </ul>
+                </div>
 
-            <div class="col-lg-2 col-md-3 footer-links">
-              <h4>Our Services</h4>
-              <ul>
-                <li><a href="#">Web Design</a></li>
-                <li><a href="#">Web Development</a></li>
-                <li><a href="#">Product Management</a></li>
-                <li><a href="#">Marketing</a></li>
-                <li><a href="#">Graphic Design</a></li>
-              </ul>
-            </div>
+                <div class="col-lg-2 col-md-3 footer-links">
+                    <h4>Our Services</h4>
+                    <ul>
+                        <li><a href="#">Web Design</a></li>
+                        <li><a href="#">Web Development</a></li>
+                        <li><a href="#">Product Management</a></li>
+                        <li><a href="#">Marketing</a></li>
+                        <li><a href="#">Graphic Design</a></li>
+                    </ul>
+                </div>
 
-            <div class="col-lg-2 col-md-3 footer-links">
-              <h4>Hic solutasetp</h4>
-              <ul>
-                <li><a href="#">Molestiae accusamus iure</a></li>
-                <li><a href="#">Excepturi dignissimos</a></li>
-                <li><a href="#">Suscipit distinctio</a></li>
-                <li><a href="#">Dilecta</a></li>
-                <li><a href="#">Sit quas consectetur</a></li>
-              </ul>
-            </div>
+                <div class="col-lg-2 col-md-3 footer-links">
+                    <h4>Hic solutasetp</h4>
+                    <ul>
+                        <li><a href="#">Molestiae accusamus iure</a></li>
+                        <li><a href="#">Excepturi dignissimos</a></li>
+                        <li><a href="#">Suscipit distinctio</a></li>
+                        <li><a href="#">Dilecta</a></li>
+                        <li><a href="#">Sit quas consectetur</a></li>
+                    </ul>
+                </div>
 
-            <div class="col-lg-2 col-md-3 footer-links">
-              <h4>Nobis illum</h4>
-              <ul>
-                <li><a href="#">Ipsam</a></li>
-                <li><a href="#">Laudantium dolorum</a></li>
-                <li><a href="#">Dinera</a></li>
-                <li><a href="#">Trodelas</a></li>
-                <li><a href="#">Flexo</a></li>
-              </ul>
-            </div>
+                <div class="col-lg-2 col-md-3 footer-links">
+                    <h4>Nobis illum</h4>
+                    <ul>
+                        <li><a href="#">Ipsam</a></li>
+                        <li><a href="#">Laudantium dolorum</a></li>
+                        <li><a href="#">Dinera</a></li>
+                        <li><a href="#">Trodelas</a></li>
+                        <li><a href="#">Flexo</a></li>
+                    </ul>
+                </div>
 
-          </div>
+            </div>
         </div>
 
         <div class="container copyright text-center mt-4">
-          <p>© <span>Copyright</span> <strong class="px-1 sitename">Medicio</strong> <span>All Rights Reserved</span></p>
-          <div class="credits">
-            <!-- All the links in the footer should remain intact. -->
-            <!-- You can delete the links only if you've purchased the pro version. -->
-            <!-- Licensing information: https://bootstrapmade.com/license/ -->
-            <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-            Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed by <a href=“https://themewagon.com>ThemeWagon
-          </div>
+            <p>© <span>Copyright</span> <strong class="px-1 sitename">Medicio</strong> <span>All Rights Reserved</span></p>
+            <div class="credits">
+                <!-- All the links in the footer should remain intact. -->
+                <!-- You can delete the links only if you've purchased the pro version. -->
+                <!-- Licensing information: https://bootstrapmade.com/license/ -->
+                <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+                Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed by <a
+                    href=“https://themewagon.com>ThemeWagon
+            </div>
         </div>
 
     </footer>
@@ -817,9 +646,18 @@
     <script>
         function updateClock() {
             const now = new Date();
-            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            const options = {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            };
             const dateStr = now.toLocaleDateString('id-ID', options);
-            const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const timeStr = now.toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
 
             document.getElementById('real-time-clock').innerHTML = `${dateStr}, ${timeStr} WIB`;
         }

@@ -38,10 +38,18 @@ Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
-Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator.')->group(function () {
+// Route::get('/register', function () {
+//     return redirect('/login');
+// });
+
+Route::middleware(['auth', 'role:operator', 'limit.operator'])->prefix('operator')->name('operator.')->group(function () {
     Route::resource('dashboard', OperatorController::class)->except(['show']);
     Route::resource('rt', RtController::class)->except(['show']);
     Route::resource('manajemen-superadmin', ManajemenSuperAdmin::class)->except(['show']);
+    Route::put('/manajemen-superadmin/{id}/update-password', [ManajemenSuperAdmin::class, 'updatePassword'])
+    ->name('manajemen-superadmin.update-password');
+    Route::put('/manajemen-admin/{id}/update-password', [ManajemenAdmin::class, 'updatePassword'])
+    ->name('manajemen-admin.update-password');
     Route::resource('manajemen-admin', ManajemenAdmin::class)->except(['show']);
     Route::get('/aktivitas', [Aktivitas::class, 'index'])->name('aktivitas');
 });
@@ -50,6 +58,7 @@ Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('supe
     Route::get('/dashboard', [superadminController::class, 'index'])->name('index');
     Route::get('/kas-rw', [KasRwController::class, 'index'])->name('kas.index');
     Route::post('/kas-rw/update', [KasRwController::class, 'update'])->name('kas.update');
+    Route::post('/kas-rw/uang-tambahan-kas', [KasRwController::class, 'storeUangTambahan'])->name('uang-tambahan-kas.store');
     Route::post('/kas-rw/pengeluaran', [KasRwController::class, 'store'])->name('pengeluaran-kas-rw.store');
     Route::put('/kas-rw/pengeluaran/update/{id}', [KasRwController::class, 'updatePengeluaran'])->name('pengeluaran-kas-rw.update');
     Route::resource('/kegiatan-rw', KegiatanRwController::class)->except(['show']);
@@ -68,16 +77,21 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('/{nama_RT}/kegiatan', KegiatanRtController::class)->except(['show']);
     Route::get('/{nama_RT}/kas-rt', [KasRTController::class, 'index'])->name('kas.index');
     Route::post('/{nama_RT}/kas-rt/update', [KasRTController::class, 'update'])->name('kas.update');
+    Route::post('/{nama_RT}/kas-rw/uang-tambahan-kas', [KasRTController::class, 'storeUangTambahan'])->name('uang-tambahan-kas.store');
     Route::post('/{nama_RT}/kas-rt/pengeluaran', [KasRTController::class, 'store'])->name('pengeluaran.store');
     Route::put('/{nama_RT}/kas-rt/pengeluaran/update/{id}', [KasRTController::class, 'updatePengeluaran'])->name('pengeluaran-kas-rt.update');
     Route::post('/{nama_RT}/kas-rt/update-tahunan', [KasRTController::class, 'dataPerTahun'])->name('kas.update-tahunan');
     Route::get('/{nama_RT}/aktivitas', [AktivitasAdmin::class, 'index'])->name('aktivitas');
 });
 
-Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(function () {
+Route::middleware(['auth', 'role:user'])->prefix('user')->name('warga.')->group(function () {
     Route::get('/dashboard', [ViewController::class, 'index'])->name('index');
+    Route::get('/dashboard/iuran', [ViewController::class, 'iuran'])->name('iuran');
+    Route::get('/dashboard/profil', [ViewController::class, 'profil'])->name('profil');
+    Route::put('/dashboard/profil/update', [ViewController::class, 'updateProfile'])->name('updateProfile');
+    Route::put('/dashboard/profil/update-password', [ViewController::class, 'updatePassword'])->name('updatePassword');
 });
 
-Auth::routes();
+Auth::routes(['register' => false]);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::post('/logout', [App\Http\Controllers\HomeController::class, 'logout'])->name('logout');

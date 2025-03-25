@@ -51,10 +51,49 @@
                                             <button type="submit" class="btn btn-primary mt-5">Perbarui Kas</button>
                                         </form>
 
+                                        <button type="button" class="btn btn-secondary mt-3" data-bs-toggle="modal"
+                                            data-bs-target="#uangEksternalModal">
+                                            Uang Eksternal
+                                        </button>
+
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Modal Uang Eksternal -->
+                            <div class="modal fade" id="uangEksternalModal" tabindex="-1"
+                                aria-labelledby="uangEksternalModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content bg-dark">
+                                        <form action="{{ route('admin.uang-tambahan-kas.store', ['nama_RT' => $nama_RT]) }}"
+                                            method="POST">
+                                            @csrf
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="uangEksternalModalLabel">Tambah Uang Eksternal
+                                                </h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="nominal" class="form-label">Nominal Uang Eksternal</label>
+                                                    <input type="number" class="form-control" id="nominal" name="nominal"
+                                                        required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="keterangan" class="form-label">Keterangan</label>
+                                                    <textarea class="form-control" id="keterangan" name="keterangan" rows="3"></textarea>
+                                                </div>
+                                                <!-- Jika dibutuhkan, tambahkan hidden input untuk menyimpan rt_id -->
+                                                {{-- <input type="hidden" name="rt_id" value="{{ $rt->id }}"> --}}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Batal</button>
+                                                <button type="submit" class="btn btn-primary">Tambah</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="card bg-dark text-white p-4">
                                 <h5 class="mb-3">Tambah Pengeluaran Kas RT</h5>
@@ -103,8 +142,8 @@
                                             Pengeluaran Kas</label>
                                         <input type="date"
                                             class="form-control @error('tgl_pengeluaran') is-invalid @enderror"
-                                            id="tgl_pengeluaran" name="tgl_pengeluaran" value="{{ old('tgl_pengeluaran') }}"
-                                            required>
+                                            id="tgl_pengeluaran" name="tgl_pengeluaran"
+                                            value="{{ old('tgl_pengeluaran') }}" required>
                                         @error('tgl_pengeluaran')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -115,12 +154,6 @@
                             </div>
 
                             <hr class="my-4 text-white">
-
-                            <form action="{{ route('admin.kas.update-tahunan', ['nama_RT' => $nama_RT]) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-primary">Update Per Tahun</button>
-                            </form>
-
 
                             <hr class="my-4 text-white">
 

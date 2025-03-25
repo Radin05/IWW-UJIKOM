@@ -22,6 +22,10 @@ class RoleMiddleware
             return redirect('/login');
         }
 
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
         $userRole = Auth::user()->role;
 
         if (!in_array($userRole, $roles)) {

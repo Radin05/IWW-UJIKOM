@@ -131,80 +131,85 @@
                                     <span class="menu-title">Kas RW</span>
                                 </a>
                             </li>
-                            <li class="nav-item ahay {{ request()->routeIs('superadmin.kegiatan-rw.index') ? 'active' : '' }}">
+                            <li
+                                class="nav-item ahay {{ request()->routeIs('superadmin.kegiatan-rw.index') ? 'active' : '' }}">
                                 <a class="nav-link uhuy" href="{{ route('superadmin.kegiatan-rw.index') }}">
                                     <i class="icon-paper menu-icon"></i>
                                     <span class="menu-title">Kegiatan RW-20</span>
                                 </a>
                             </li>
-                            <li class="nav-item ahay {{ request()->routeIs('superadmin.komentar.index') ? 'active' : '' }}">
+                            {{-- <li class="nav-item ahay {{ request()->routeIs('superadmin.komentar.index') ? 'active' : '' }}">
                                 <a class="nav-link uhuy" href="{{ route('superadmin.komentar.index') }}">
                                     <i class="icon-paper menu-icon"></i>
                                     <span class="menu-title">Komentar</span>
                                 </a>
-                            </li>
+                            </li> --}}
                             <li class="nav-item ahay {{ request()->routeIs('superadmin.aktivitas') ? 'active' : '' }}">
                                 <a class="nav-link uhuy" href="{{ route('superadmin.aktivitas') }}">
                                     <i class="icon-paper menu-icon"></i>
                                     <span class="menu-title">Aktivasi</span>
                                 </a>
                             </li>
-                    @elseif (Auth::user()->role === 'admin')
-                        <ul class="nav">
-                            <li class="nav-item ahay {{ request()->routeIs('admin.index') ? 'active' : '' }}">
-                                <a class="nav-link uhuy" href="{{ route('admin.index', ['nama_RT' => $nama_RT]) }}">
-                                    <i class="icon-grid menu-icon"></i>
-                                    <span class="menu-title">Dashboard</span>
-                                </a>
-                            </li>
-                            <li class="nav-item ahay {{ request()->routeIs('admin.warga.index') ? 'active' : '' }}">
-                                <a class="nav-link uhuy" href="{{ route('admin.warga.index', ['nama_RT' => $nama_RT]) }}">
-                                    <i class="icon-paper menu-icon"></i>
-                                    <span class="menu-title">Warga dan Akun</span>
-                                </a>
-                            </li>
-                            <li
-                                class="nav-item ahay {{ ( request()->routeIs('admin.pembayaran.index') ? 'active menu-open' : '' || request()->routeIs('admin.kas.index')) ? 'active' : '' }}">
-                                <a class="nav-link uhuy" data-toggle="collapse" href="#ui-basic"
-                                    aria-expanded="{{  request()->routeIs('admin.pembayaran.index') || request()->routeIs('admin.kas.index') ? 'true' : 'false' }}"
-                                    aria-controls="ui-basic">
-                                    <i class="icon-head menu-icon"></i>
-                                    <span class="menu-title">Keuangan</span>
-                                    <i class="menu-arrow"></i>
-                                </a>
-                                <div class="collapse {{ request()->routeIs('admin.pembayaran.index') || request()->routeIs('admin.kas.index') ? 'show' : '' }}"
-                                    id="ui-basic">
-                                    <ul class="nav flex-column sub-menu">
-                                        <li
-                                            class="nav-item ahay {{ request()->routeIs('admin.pembayaran.index') ? 'active' : '' }}">
-                                            <a class="nav-link uhuy"
-                                                href="{{ route('admin.pembayaran.index', ['nama_RT' => $nama_RT, 'year' => Carbon::now('Asia/Jakarta')->year, 'month' => Carbon::now('Asia/Jakarta')->month]) }}">
-                                                Pembayaran Warga
-                                            </a>
-                                        </li>
-                                        <li
-                                            class="nav-item ahay {{ request()->routeIs('admin.kas.index') ? 'active' : '' }}">
-                                            <a class="nav-link uhuy"
-                                                href="{{ route('admin.kas.index', ['nama_RT' => $nama_RT]) }}">
-                                                Kas {{ Auth::user()->rt->nama_RT }}
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </li>
-                            <li class="nav-item ahay {{ request()->routeIs('admin.kegiatan.index') ? 'active' : '' }}">
-                                <a class="nav-link uhuy" href="{{ route('admin.kegiatan.index', ['nama_RT' => $nama_RT]) }}">
-                                    <i class="icon-paper menu-icon"></i>
-                                    <span class="menu-title">Kegiatan</span>
-                                </a>
-                            </li>
-                            <li class="nav-item ahay {{ request()->routeIs('admin.aktivitas') ? 'active' : '' }}">
-                                <a class="nav-link uhuy" href="{{ route('admin.aktivitas', ['nama_RT' => $nama_RT]) }}">
-                                    <i class="icon-paper menu-icon"></i>
-                                    <span class="menu-title">Aktivasi</span>
-                                </a>
-                            </li>
-                        </ul>
+                        @elseif (Auth::user()->role === 'admin')
+                            <ul class="nav">
+                                <li class="nav-item ahay {{ request()->routeIs('admin.index') ? 'active' : '' }}">
+                                    <a class="nav-link uhuy" href="{{ route('admin.index', ['nama_RT' => $nama_RT]) }}">
+                                        <i class="icon-grid menu-icon"></i>
+                                        <span class="menu-title">Dashboard</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item ahay {{ request()->routeIs('admin.warga.index') ? 'active' : '' }}">
+                                    <a class="nav-link uhuy"
+                                        href="{{ route('admin.warga.index', ['nama_RT' => $nama_RT]) }}">
+                                        <i class="icon-paper menu-icon"></i>
+                                        <span class="menu-title">Warga dan Akun</span>
+                                    </a>
+                                </li>
+                                <li
+                                    class="nav-item ahay {{ (request()->routeIs('admin.pembayaran.index') ? 'active menu-open' : '' || request()->routeIs('admin.kas.index')) ? 'active' : '' }}">
+                                    <a class="nav-link uhuy" data-toggle="collapse" href="#ui-basic"
+                                        aria-expanded="{{ request()->routeIs('admin.pembayaran.index') || request()->routeIs('admin.kas.index') ? 'true' : 'false' }}"
+                                        aria-controls="ui-basic">
+                                        <i class="icon-head menu-icon"></i>
+                                        <span class="menu-title">Keuangan</span>
+                                        <i class="menu-arrow"></i>
+                                    </a>
+                                    <div class="collapse {{ request()->routeIs('admin.pembayaran.index') || request()->routeIs('admin.kas.index') ? 'show' : '' }}"
+                                        id="ui-basic">
+                                        <ul class="nav flex-column sub-menu">
+                                            <li
+                                                class="nav-item ahay {{ request()->routeIs('admin.pembayaran.index') ? 'active' : '' }}">
+                                                <a class="nav-link uhuy"
+                                                    href="{{ route('admin.pembayaran.index', ['nama_RT' => $nama_RT, 'year' => Carbon::now('Asia/Jakarta')->year, 'month' => Carbon::now('Asia/Jakarta')->month]) }}">
+                                                    Pembayaran Warga
+                                                </a>
+                                            </li>
+                                            <li
+                                                class="nav-item ahay {{ request()->routeIs('admin.kas.index') ? 'active' : '' }}">
+                                                <a class="nav-link uhuy"
+                                                    href="{{ route('admin.kas.index', ['nama_RT' => $nama_RT]) }}">
+                                                    Kas {{ Auth::user()->rt->nama_RT }}
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li
+                                    class="nav-item ahay {{ request()->routeIs('admin.kegiatan.index') ? 'active' : '' }}">
+                                    <a class="nav-link uhuy"
+                                        href="{{ route('admin.kegiatan.index', ['nama_RT' => $nama_RT]) }}">
+                                        <i class="icon-paper menu-icon"></i>
+                                        <span class="menu-title">Kegiatan</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item ahay {{ request()->routeIs('admin.aktivitas') ? 'active' : '' }}">
+                                    <a class="nav-link uhuy"
+                                        href="{{ route('admin.aktivitas', ['nama_RT' => $nama_RT]) }}">
+                                        <i class="icon-paper menu-icon"></i>
+                                        <span class="menu-title">Aktivasi</span>
+                                    </a>
+                                </li>
+                            </ul>
                     @endif
                 @endauth
             </nav>

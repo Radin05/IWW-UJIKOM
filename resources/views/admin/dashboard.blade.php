@@ -37,20 +37,11 @@
                                 <span class="text-primary">Klik button Lihat!</span>
                             </h6>
                         </div>
-                        <div class="col-12 col-xl-4">
+                        <div class="col-12 col-xl-4 mt-3">
                             <div class="justify-content-end d-flex">
                                 <div class="dropdown flex-md-grow-1 flex-xl-grow-0">
-                                    <form id="yearForm" method="GET" action="">
-                                        <select name="year" id="year" class="form-select"
-                                            onchange="document.getElementById('yearForm').submit();">
-                                            @for ($i = 2020; $i <= Carbon::now('Asia/Jakarta')->year + 3; $i++)
-                                                <option value="{{ $i }}"
-                                                    {{ request('year', Carbon::now('Asia/Jakarta')->year) == $i ? 'selected' : '' }}>
-                                                    Tahun {{ $i }}
-                                                </option>
-                                            @endfor
-                                        </select>
-                                    </form>
+                                    <i class="mdi mdi-calendar"></i>Today <small> {{ $carbon->format('d-m-Y') }}
+                                    </small>
                                 </div>
                             </div>
                         </div>

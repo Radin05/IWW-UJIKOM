@@ -16,9 +16,10 @@ class OperatorController extends Controller
         $admin = User::where('role', 'admin')->count();
         $superadmin = User::where('role', 'superadmin')->count();
         $operator = User::where('role', 'operator')->count();
+        $operatorData = User::where('role', 'operator')->get(); ;
         $rts = RT::count();
         $carbon = Carbon::now('Asia/Jakarta');
 
-        return view('operator.dashboard', compact('admin', 'superadmin', 'operator', 'rts', 'carbon'));
+        return view('operator.dashboard', compact('admin', 'superadmin', 'operator', 'operatorData', 'rts', 'carbon'));
     }
 }

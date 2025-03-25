@@ -36,12 +36,12 @@ class Keluarga extends Controller
             return response()->json(['error' => $validator->errors()], 422);
         }
 
-        $keluargas = ModelKeluarga::create($request->all());
+        $keluarga = ModelKeluarga::create($request->all());
 
         return response()->json([
-            'success'    => true,
-            'message'    => 'Pembayaran berhasil disimpan melalui API.',
-            'pembayaran' => $keluargas,
+            'success' => true,
+            'message' => 'Data keluarga berhasil disimpan melalui API.',
+            'data'    => $keluarga,
         ], 201);
     }
 

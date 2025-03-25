@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,6 +24,7 @@ class User extends Authenticatable
         'rt_id',
         'foto',
         'kedudukan',
+        'login_time',
     ];
 
     /**
@@ -44,6 +44,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'login_time' => 'datetime',
     ];
 
     public function rt()
@@ -51,9 +52,9 @@ class User extends Authenticatable
         return $this->belongsTo(RT::class, 'rt_id', 'id');
     }
 
-    public function no_kk()
+    public function keluarga()
     {
-        return $this->belongsTo(Keluarga::class);
+        return $this->belongsTo(Keluarga::class, 'no_kk_keluarga', 'no_kk');
     }
 
     public function activityLog()

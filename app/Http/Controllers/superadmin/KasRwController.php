@@ -7,6 +7,7 @@ use App\Models\KasRw;
 use App\Models\KegiatanRw;
 use App\Models\Pembayaran;
 use App\Models\PengeluaranKasRw;
+use App\Models\UangTambahan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -17,7 +18,7 @@ class KasRwController extends Controller
     {
         $kasRw        = KasRw::first();
         $pengeluarans = PengeluaranKasRw::orderBy('tgl_pengeluaran', 'asc')->with(['kegiatan', 'activityLog.user'])->get();
-        $kegiatans     = KegiatanRw::orderBy('tanggal_kegiatan', 'desc')->get();
+        $kegiatans    = KegiatanRw::orderBy('tanggal_kegiatan', 'desc')->get();
 
         return view('superadmin.kas_rw.index', compact('kasRw', 'pengeluarans', 'kegiatans'));
     }
@@ -33,16 +34,17 @@ class KasRwController extends Controller
         $totalKasRW = 0;
 
         foreach ($totalKas as $pembayaran) {
-            // Ambil sisa setelah dikurangi Kas RT (Rp 25.000 per keluarga per bulan)
+                                                              // Ambil sisa setelah dikurangi Kas RT (Rp 25.000 per keluarga per bulan)
             $sisa = max($pembayaran->total_bayar - 25000, 0); // Pastikan tidak negatif
             $totalKasRW += $sisa;
         }
 
         // Ambil total pengeluaran RW
         $totalPengeluaran = PengeluaranKasRw::sum('nominal');
+        $uangTambahan = UangTambahan::sum('nominal');
 
         // Hitung jumlah kas RW setelah dikurangi pengeluaran
-        $jumlahKasAkhir = $totalKasRW - $totalPengeluaran;
+        $jumlahKasAkhir = $totalKasRW + $uangTambahan - $totalPengeluaran;
 
         // Perbarui atau buat kas RW baru jika belum ada
         KasRw::updateOrCreate(
@@ -100,6 +102,39 @@ class KasRwController extends Controller
         $kasRW->save();
 
         Alert::success('Berhasil', 'Pengeluaran berhasil ditambahkan dan kas RT berhasil diperbarui.');
+        return redirect()->route('superadmin.kas.index');
+    }
+
+    public function storeUangTambahan(Request $request)
+    {
+        $request->validate([
+            'nominal'    => 'required|numeric|min:0',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        // Simpan transaksi uang tambahan ke tabel uang_tambahans
+        $uangTambahan = UangTambahan::create([
+            'nominal'    => $request->nominal,
+            'keterangan' => $request->keterangan,
+        ]);
+
+        // Ambil record Kas RW (asumsikan hanya ada satu record)
+        $kasRw = KasRw::first();
+        if (! $kasRw) {
+            // Jika belum ada, buat record baru dengan jumlah awal 0
+            $kasRw = KasRw::create([
+                'jumlah_kas_rw' => 0,
+            ]);
+        }
+
+        // Update kas_rw:
+        // - Tambahkan nominal uang tambahan ke jumlah kas RW
+        // - Set foreign key uang_tambahan_kas_id ke transaksi uang tambahan yang baru dibuat
+        $kasRw->jumlah_kas_rw += $uangTambahan->nominal;
+        $kasRw->uang_tambahan_kas_id = $uangTambahan->id;
+        $kasRw->save();
+
+        Alert::success('Berhasil', 'Uang tambahan berhasil ditambahkan dan kas RW diperbarui.');
         return redirect()->route('superadmin.kas.index');
     }
 

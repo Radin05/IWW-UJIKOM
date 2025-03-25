@@ -13,10 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('rts', function (Blueprint $table) {
+        Schema::create('uang_tambahan_rts', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_RT')->unique();
+            $table->decimal('nominal', 15, 2)->default(0);
+            $table->text('keterangan')->nullable();
+            $table->unsignedBigInteger('rt_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('rt_id')->references('id')->on('rts')->onDelete('cascade');
         });
     }
 
@@ -27,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('rts');
+        Schema::dropIfExists('uang_tambahan_rts');
     }
 };

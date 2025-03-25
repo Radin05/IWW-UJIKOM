@@ -11,7 +11,7 @@ class KasRw extends Model
 
     protected $table = 'kas_rws';
 
-    protected $fillable = ['pembayaran_id', 'jumlah_kas_rw', 'pengeluaran_kas_rw_id'];
+    protected $fillable = ['pembayaran_id', 'jumlah_kas_rw', 'pengeluaran_kas_rw_id', 'uang_tambahan_kas_id'];
 
     public function pembayaran()
     {

@@ -6,27 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-        Schema::create('rts', function (Blueprint $table) {
+        Schema::create('uang_tambahans', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_RT')->unique();
+            $table->decimal('nominal', 15, 2)->default(0);
+            $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        Schema::dropIfExists('rts');
+        Schema::dropIfExists('uang_tambahans');
     }
 };

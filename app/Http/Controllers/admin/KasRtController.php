@@ -9,6 +9,7 @@ use App\Models\Keluarga;
 use App\Models\Pembayaran;
 use App\Models\PengeluaranKasRt;
 use App\Models\RT;
+use App\Models\UangTambahanRT;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -58,16 +59,17 @@ class KasRTController extends Controller
 
         $totalKas = Pembayaran::whereIn('no_kk_keluarga', $keluargas)
             ->selectRaw('no_kk_keluarga, year, month, SUM(sejumlah) as total_bayar')
-            ->groupBy('no_kk_keluarga', 'year', 'month') // Pastikan per keluarga per bulan dihitung sekali
-            ->having('total_bayar', '>=', 25000)         // Pastikan hanya dihitung jika pembayaran lebih dari 25.000
+            ->groupBy('no_kk_keluarga', 'year', 'month')
+            ->having('total_bayar', '>=', 25000)
             ->get()
             ->count() * 25000;
 
         // Ambil total pengeluaran untuk RT tersebut
+        $uangTambahan = UangTambahanRT::where('rt_id', $rt->id)->sum('nominal');
         $totalPengeluaran = PengeluaranKasRT::where('rt_id', $rt->id)->sum('nominal');
 
         // Hitung jumlah kas setelah dikurangi pengeluaran
-        $jumlahKasAkhir = $totalKas - $totalPengeluaran;
+        $jumlahKasAkhir = $totalKas + $uangTambahan - $totalPengeluaran;
 
         // Perbarui atau buat kas RT baru jika belum ada
         $kas = KasRT::updateOrCreate(
@@ -79,9 +81,47 @@ class KasRTController extends Controller
         return redirect()->route('admin.kas.index', ['nama_RT' => $nama_RT]);
     }
 
-    public function dataPerTahun(Request $request, $nama_RT)
+    public function storeUangTambahan(Request $request, $nama_RT)
     {
-        Alert::success('Berhasil', 'Pengeluaran per tahun telah diperbarui!');
+        // Validasi input
+        $request->validate([
+            'nominal'    => 'required|numeric|min:0',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        // Ambil RT yang sesuai dengan nama_RT yang diberikan
+        $rt = RT::where('nama_RT', $nama_RT)->firstOrFail();
+
+        // Pastikan admin hanya bisa mengelola kas RT sesuai dengan RT yang dikelolanya
+        $admin = Auth::user();
+        if ($admin->rt_id != $rt->id) {
+            abort(403, 'Anda tidak memiliki akses untuk mengubah kas RT ini.');
+        }
+
+        // Ambil atau buat record Kas RT untuk RT tersebut
+        $kas = KasRT::where('rt_id', $rt->id)->first();
+        if (! $kas) {
+            $kas = KasRT::create([
+                'rt_id'         => $rt->id,
+                'jumlah_kas_rt' => 0,
+                'rt_id' => $rt->id
+            ]);
+        }
+
+        // Simpan transaksi uang tambahan ke tabel uang_tambahans
+        $uangTambahan = UangTambahanRT::create([
+            'nominal'    => $request->nominal,
+            'keterangan' => $request->keterangan,
+            'rt_id' => $rt->id
+        ]);
+
+        // Update kas RT: tambahkan nominal ke jumlah_kas_rt dan simpan relasi (jika field ada)
+        $kas->jumlah_kas_rt += $uangTambahan->nominal;
+        // Jika tabel kas_rts memiliki field uang_tambahan_kas_id, kita dapat menyimpannya:
+        $kas->uang_tambahan_kas_id = $uangTambahan->id;
+        $kas->save();
+
+        Alert::success('Berhasil', 'Uang tambahan berhasil ditambahkan dan kas RT diperbarui.');
         return redirect()->route('admin.kas.index', ['nama_RT' => $nama_RT]);
     }
 
