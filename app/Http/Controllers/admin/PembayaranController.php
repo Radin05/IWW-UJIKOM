@@ -37,6 +37,7 @@ class PembayaranController extends Controller
         $pembayarans = Pembayaran::where('year', $year)
             ->where('month', $month)
             ->whereIn('no_kk_keluarga', $keluargas)
+            ->with('activityLog')
             ->get();
 
         $totalPembayaranPerbulan = $pembayarans->sum('sejumlah');

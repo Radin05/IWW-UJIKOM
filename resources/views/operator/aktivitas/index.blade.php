@@ -16,7 +16,7 @@
                     <div class="card card-tale">
                         <div class="card-body">
                             <div class="table-responsive pt-3">
-                                <table class="table table-dark table-striped table-hover" id="example">
+                                <table id="example" class="table table-dark table-striped table-hover">
                                     <thead>
                                         <tr>
                                             <th>No</th>
@@ -68,23 +68,12 @@
 @endsection
 
 @push('scripts')
-    {{-- <script src="https://code.jquery.com/jquery-3.7.1.js"></script> --}}
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/2.2.1/js/jquery.dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.2.1/js/dataTables.bootstrap4.js"></script>
     <script>
-        new DataTable('#example', {
-        pageLength: 10, // Jumlah data per halaman
-        lengthChange: true,
-        language: {
-            search: "Cari:",
-            lengthMenu: "Tampilkan _MENU_ data per halaman",
-            zeroRecords: "Tidak ada data ditemukan",
-            info: "Menampilkan _START_ hingga _END_ dari total _TOTAL_ data",
-            infoEmpty: "Data tidak tersedia",
-            infoFiltered: "(disaring dari _MAX_ total data)"
-        }
-    });
+        new DataTable('#example');
     </script>
 @endpush

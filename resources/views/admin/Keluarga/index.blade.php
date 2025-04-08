@@ -175,9 +175,9 @@
 
                                                             <div class="dropdown-divider"></div>
 
-                                                            <button class="dropdown-item" data-bs-toggle="modal"
-                                                                data-bs-target="#editKeluargaModal{{ $data->no_kk }}">Edit</button>
-
+                                                            <a href="{{ route('admin.warga.edit', ['nama_RT' => $nama_RT, 'warga' => $data->id]) }}" class="dropdown-item">
+                                                                Edit
+                                                            </a>
                                                             <div class="dropdown-divider"></div>
 
                                                             <button class="dropdown-item" data-bs-toggle="modal"
@@ -311,85 +311,12 @@
                                         </div>
                                     </div>
 
-                                    {{-- Modal Edit Keluarga --}}
-                                    <div class="modal fade" id="editKeluargaModal{{ $data->no_kk }}" tabindex="-2"
-                                        aria-labelledby="editKeluargaModalLabel{{ $data->no_kk }}" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content bg-dark">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title"
-                                                        id="editKeluargaModalLabel{{ $data->no_kk }}">
-                                                        Edit Keluarga</h5>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form
-                                                        action="{{ route('admin.warga.update', ['nama_RT' => $nama_RT, 'warga' => $data->no_kk]) }}"
-                                                        method="POST">
-                                                        @csrf
-                                                        @method('PUT')
-
-                                                        <div class="mb-3">
-                                                            <label for="no_kk" class="form-label">No KK</label>
-                                                            <input type="text"
-                                                                class="form-control @error('no_kk') is-invalid @enderror"
-                                                                id="no_kk-{{ $data->no_kk }}" name="no_kk"
-                                                                value="{{ $data->no_kk }}">
-                                                            @error('no_kk')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <div class="mb-3">
-                                                            <label for="nama_keluarga" class="form-label">Nama
-                                                                Keluarga</label>
-                                                            <input type="text"
-                                                                class="form-control @error('nama_keluarga') is-invalid @enderror"
-                                                                id="nama_keluarga" name="nama_keluarga"
-                                                                value="{{ $data->nama_keluarga }}">
-                                                            @error('nama_keluarga')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <div class="mb-3">
-                                                            <label for="alamat" class="form-label">Alamat</label>
-                                                            <input type="text"
-                                                                class="form-control @error('alamat') is-invalid @enderror"
-                                                                id="alamat" name="alamat"
-                                                                value="{{ $data->alamat }}">
-                                                            @error('alamat')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <div class="mb-3">
-                                                            <label for="no_telp" class="form-label">No HP</label>
-                                                            <input type="text"
-                                                                class="form-control @error('no_telp') is-invalid @enderror"
-                                                                id="no_telp" name="no_telp"
-                                                                value="{{ $data->no_telp }}">
-                                                            @error('no_telp')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Batal</button>
-                                                        <button type="submit"
-                                                            class="btn btn-primary">Simpan
-                                                            Perubahan</button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     {{-- Modal Activity Log --}}
                                     @php
                                         $createLog = $data->activityLog
                                             ->where('activity', 'create')
                                             ->where('target_table', 'keluargas')
-                                            ->first();
+                                            ->last();
 
                                         $updateLog = $data->activityLog
                                             ->where('activity', 'update')

@@ -14,7 +14,7 @@ class LimitOperatorUsage
         $user = Auth::user();
 
         if ($user && $user->role === 'operator') {
-            $maxUsageMinutes = 10; // Set batas waktu 1 menit untuk uji coba
+            $maxUsageMinutes = 10; // Set batas waktu 10 menit untuk uji coba
 
             if (!$user->login_time) {
                 $user->login_time = Carbon::now();

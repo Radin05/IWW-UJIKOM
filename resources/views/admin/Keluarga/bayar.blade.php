@@ -271,8 +271,10 @@
                                                                 data-bs-target="#editPembayaranModal-{{ $data->no_kk }}">Edit</button>
                                                             <div class="dropdown-divider"></div>
                                                             <button class="dropdown-item" data-bs-toggle="modal"
+                                                                data-bs-target="#activityLog-{{ $data->no_kk }}">Aktifitas</button>
+                                                            <div class="dropdown-divider"></div>
+                                                            <button class="dropdown-item" data-bs-toggle="modal"
                                                                 data-bs-target="#deletePembayaranModal-{{ $data->no_kk }}">Hapus</button>
-
                                                         </div>
                                                     </div>
                                                 </td>
@@ -331,6 +333,81 @@
                                         </div>
                                     </div>
 
+                                    <div class="modal fade" id="activityLog-{{ $data->no_kk }}" tabindex="-1"
+                                        aria-labelledby="activityLogLabel-{{ $data->no_kk }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content bg-dark">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Aktivitas CRUD</h5>
+                                                    <button type="button" class="close" data-bs-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    @foreach ($pembayarans->where('no_kk_keluarga', $data->no_kk) as $pembayaran)
+                                                        @php
+                                                            $createLog = $data->activityLog
+                                                                ->where('activity', 'create')
+                                                                ->last();
+                                                            $updateLog = $data->activityLog
+                                                                ->where('activity', 'update')
+                                                                ->last();
+                                                        @endphp
+                                                        <div class="card bg-secondary text-dark mb-3">
+                                                            <div class="card-body">
+                                                                <div class="mb-3">
+                                                                    <label>Dibuat oleh:</label>
+                                                                    <b>{{ $createLog?->user?->name ?? 'Tidak Diketahui' }}</b>
+                                                                    <br>
+                                                                    <label>Aktivitas:</label>
+                                                                    <b>{{ $createLog?->activity ?? 'Tidak Diketahui' }}</b>
+                                                                </div>
+
+                                                                <div class="mb-3">
+                                                                    <label>Deskripsi:</label><br>
+                                                                    <small>{!! nl2br(e($createLog?->description ?? 'Tidak ada deskripsi')) !!}</small>
+                                                                </div>
+
+                                                                <div class="mb-3">
+                                                                    <label>Waktu Aktivitas:</label><br>
+                                                                    @if ($createLog && $createLog->performed_at)
+                                                                        <small>{{ \Carbon\Carbon::parse($createLog->performed_at)->translatedFormat('d F Y H:i:s') }}</small>
+                                                                    @else
+                                                                        <small>-</small>
+                                                                    @endif
+                                                                </div>
+
+                                                                <hr>
+
+                                                                <div class="mb-3">
+                                                                    <label>Diubah oleh:</label>
+                                                                    <b>{{ $updateLog?->user?->name ?? 'Belum diedit' }}</b>
+                                                                    <br>
+                                                                    <label>Deskripsi Perubahan:</label>
+                                                                    <small>{!! nl2br(e($updateLog?->description ?? 'Belum ada perubahan')) !!}</small>
+                                                                </div>
+
+                                                                <div class="mb-3">
+                                                                    <label>Waktu Diedit:</label><br>
+                                                                    @if ($updateLog && $updateLog->performed_at)
+                                                                        <small>{{ \Carbon\Carbon::parse($updateLog->performed_at)->translatedFormat('d F Y H:i:s') }}</small>
+                                                                    @else
+                                                                        <small>Belum diedit</small>
+                                                                    @endif
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Kembali</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="modal fade" id="deletePembayaranModal-{{ $data->no_kk }}"
                                         tabindex="-1" aria-labelledby="deletePembayaranModalLabel-{{ $data->no_kk }}"
                                         aria-hidden="true">
@@ -346,18 +423,6 @@
                                                 <div class="modal-body">
                                                     <p>Pilih pembayaran yang ingin dihapus:</p>
                                                     @foreach ($pembayarans->where('no_kk_keluarga', $data->no_kk) as $pembayaran)
-                                                        {{-- <form
-                                                            action="{{ route('admin.pembayaran.destroy', ['nama_RT' => $nama_RT, 'pembayaran' => $pembayaran->id]) }}"
-                                                            method="POST">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger btn-block mb-2">
-                                                                Hapus Rp
-                                                                {{ number_format($pembayaran->sejumlah, 0, ',', '.') }}
-                                                                pada
-                                                                {{ $pembayaran->tgl_pembayaran->format('d M Y') }}
-                                                            </button>
-                                                        </form> --}}
                                                         <a href="{{ route('admin.pembayaran.destroy', ['nama_RT' => $nama_RT, 'pembayaran' => $pembayaran->id]) }}"
                                                             class="dropdown-item warna mb-2" data-confirm-delete="true">
                                                             Hapus Rp
@@ -371,68 +436,6 @@
                                         </div>
                                     </div>
                                 @endforeach
-
-
-
-
-                                {{-- @foreach ($pembayarans as $data)
-                                    @php
-                                        $createLog = $data->activityLog->where('activity', 'create')->first();
-                                        // $updateLog = $data->activityLog->where('activity', 'update')->last();
-                                    @endphp
-                                    <div class="modal fade" id="activityLog-{{ $data->id }}" tabindex="-1" aria-labelledby="activityLogLabel-{{ $data->id }}"
-                                        aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content bg-dark">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="activityLogLabel-{{ $data->id }}">
-                                                        Aktifitas CRUD</h5>
-                                                </div>
-
-                                                <div class="modal-body">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Dibuat/Diubah oleh :
-                                                            <b>{{ $createLog?->activity ?? 'Tidak Diketahui' }}</b>
-                                                            By
-                                                            <b>{{ $createLog?->user?->name ?? 'Tidak Diketahui' }}</b>
-                                                        </label>
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Waktu Aktifitas :
-                                                            <small>
-                                                                {{ $createLog?->performed_at
-                                                                    ? \Carbon\Carbon::parse($createLog->performed_at)->setTimezone('Asia/Jakarta')->translatedFormat('d F Y H:i:s')
-                                                                    : '-' }}
-                                                            </small>
-                                                        </label>
-                                                    </div>
-                                                </div>
-
-                                                <div class="modal-body">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Diubah oleh :
-                                                            <b>{{ $updateLog?->activity ?? 'Belum diedit' }}</b>
-                                                            By
-                                                            <b>{{ $updateLog?->user?->name ?? 'Belum diedit' }}</b>
-                                                        </label>
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Waktu Aktifitas :
-                                                            <small>
-                                                                {{ $updateLog?->performed_at
-                                                                    ? \Carbon\Carbon::parse($updateLog->performed_at)->setTimezone('Asia/Jakarta')->translatedFormat('d F Y H:i:s')
-                                                                    : '-' }}
-                                                            </small>
-                                                        </label>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach --}}
 
                             </div>
                         </div>

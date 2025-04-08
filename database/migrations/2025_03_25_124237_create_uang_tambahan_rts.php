@@ -6,16 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
+    
     public function up()
     {
         Schema::create('uang_tambahan_rts', function (Blueprint $table) {
             $table->id();
-            $table->decimal('nominal', 15, 2)->default(0);
+            $table->decimal('nominal', 15, 2)->nullable();
             $table->text('keterangan')->nullable();
             $table->unsignedBigInteger('rt_id')->nullable();
             $table->timestamps();
@@ -24,11 +20,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('uang_tambahan_rts');

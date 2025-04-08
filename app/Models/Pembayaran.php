@@ -20,4 +20,9 @@ class Pembayaran extends Model
         return $this->belongsTo(Keluarga::class, 'no_kk_keluarga');
     }
 
+    public function activityLog()
+    {
+        return $this->hasMany(ActivityLog::class, 'target_id', 'id');
+    }
+    
 }

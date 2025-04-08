@@ -9,7 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class KeluargaController extends Controller
@@ -66,39 +66,51 @@ class KeluargaController extends Controller
         return redirect()->route('admin.warga.index', ['nama_RT' => $nama_RT]);
     }
 
-    public function update(Request $request, $nama_RT, $no_kk)
+    public function edit($nama_RT, $id)
+    {
+        $admin    = Auth::user();
+        $keluarga = Keluarga::where('id', $id)->firstOrFail();
+
+        // Cek apakah admin berhak mengedit data keluarga ini
+        if ($admin->rt_id != $keluarga->rt_id) {
+            abort(403, 'Anda tidak memiliki akses untuk mengedit keluarga ini.');
+        }
+
+        return view('admin.keluarga.edit', ['warga' => $keluarga, 'nama_RT' => $nama_RT]);
+    }
+
+    public function updateKeluarga(Request $request, $nama_RT, Keluarga $warga)
     {
         $admin = Auth::user();
-        $keluargas = Keluarga::findOrFail($no_kk);
 
+        // Validasi input
         $request->validate([
-            'no_kk'         => [
-                'required',
-                Rule::unique('keluargas', 'no_kk')->ignore($keluargas->no_kk, 'no_kk'),
-            ],
+            'no_kk'         => 'required|string|max:16|unique:keluargas,no_kk,' . $warga->id,
             'nama_keluarga' => 'required|string|max:255',
             'alamat'        => 'required|string|max:255',
             'no_telp'       => 'required|string|max:15',
-            'rt_id'         => 'required|exists:rts,id',
         ]);
 
-        $oldData = $keluargas->replicate();
+        // Simpan data lama untuk log aktivitas
+        $oldData = $warga->replicate();
         $changes = [];
 
+        // Bandingkan data lama dan baru
         if ($oldData->no_kk !== $request->no_kk) {
-            $changes[] = "No KK dari {$oldData->no_kk} menjadi {$request->no_kk}";
+            $changes[] = "No KK: {$oldData->no_kk} → {$request->no_kk}";
         }
         if ($oldData->nama_keluarga !== $request->nama_keluarga) {
-            $changes[] = "Nama Keluarga dari {$oldData->nama_keluarga} menjadi {$request->nama_keluarga}";
+            $changes[] = "Nama Keluarga: {$oldData->nama_keluarga} → {$request->nama_keluarga}";
         }
         if ($oldData->alamat !== $request->alamat) {
-            $changes[] = "Alamat dari {$oldData->alamat} menjadi {$request->alamat}";
+            $changes[] = "Alamat: {$oldData->alamat} → {$request->alamat}";
         }
         if ($oldData->no_telp !== $request->no_telp) {
-            $changes[] = "No HP dari {$oldData->no_telp} menjadi {$request->no_telp}";
+            $changes[] = "No HP: {$oldData->no_telp} → {$request->no_telp}";
         }
 
-        $keluargas->update([
+        // Menggunakan fill untuk mengupdate data
+        $warga->fill([
             'no_kk'         => $request->no_kk,
             'nama_keluarga' => $request->nama_keluarga,
             'alamat'        => $request->alamat,
@@ -106,22 +118,27 @@ class KeluargaController extends Controller
             'rt_id'         => $admin->rt_id,
         ]);
 
+        // Simpan perubahan
+        $updated = $warga->save();
+
+        // Debugging update result
+        Log::debug('Keluarga updated:', ['updated' => $updated]);
+
+        // Simpan log aktivitas jika ada perubahan
         if (! empty($changes)) {
             ActivityLog::create([
                 'user_id'      => auth()->id(),
                 'activity'     => 'update',
-                // 'description'  => '',
                 'description'  => implode('<br>', $changes),
                 'target_table' => 'keluargas',
-                'target_id'    => $keluargas->no_kk,
+                'target_id'    => $warga->id,
                 'performed_at' => now(),
             ]);
         }
 
-        Alert::success('Berhasil', 'Data keluarga berhasil diperbarui.');
+        Alert::success('Berhasil', 'Data keluarga berhasil diubah.');
 
-        return redirect()->route('admin.warga.index', ['nama_RT' => $nama_RT])
-            ->with('success', 'Data keluarga berhasil diperbarui');
+        return redirect()->route('admin.warga.edit', ['warga' => $warga, 'nama_RT' => $nama_RT]);
     }
 
     public function storeAkun(Request $request, $nama_RT)
@@ -194,7 +211,7 @@ class KeluargaController extends Controller
             ]);
         }
 
-        Alert::success('Success', 'Data'. $oldData . ' berhasil diperbarui.');
+        Alert::success('Success', 'Data' . $oldData . ' berhasil diperbarui.');
 
         return redirect()->route('admin.warga.index', ['nama_RT' => $nama_RT]);
     }
@@ -225,7 +242,6 @@ class KeluargaController extends Controller
         }
 
         Alert::success('Success', 'Data berhasil dihapus.');
-
 
         return redirect()->route('admin.warga.index', ['nama_RT' => $nama_RT])
             ->with('error', 'Data tidak ditemukan.');

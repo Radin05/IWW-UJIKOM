@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('uang_tambahans', function (Blueprint $table) {
             $table->id();
-            $table->decimal('nominal', 15, 2)->default(0);
+            $table->decimal('nominal', 15, 2)->nullable();
             $table->text('keterangan')->nullable();
             $table->timestamps();
         });

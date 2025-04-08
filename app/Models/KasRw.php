@@ -17,4 +17,10 @@ class KasRw extends Model
     {
         return $this->belongsTo(Pembayaran::class);
     }
+
+    public function activityLog()
+    {
+        return $this->hasMany(ActivityLog::class, 'target_id', 'id');
+    }
+    
 }

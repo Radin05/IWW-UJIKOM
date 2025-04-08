@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('pengeluaran_kas_rw_id')->references('id')->on('pengeluaran_kas_rws');
-            $table->foreign('uang_tambahan_kas_id')->references('id')->on('uang_tambahans');
+            $table->foreign('uang_tambahan_kas_id')->references('id')->on('uang_tambahans')->onDelete('set null');
             $table->foreign('pembayaran_id')->references('id')->on('pembayarans')->onDelete('set null');
         });
     }

@@ -13,7 +13,7 @@
                             <h3 class="font-weight-bold">SELAMAT DATANG DIHALAMAN OPERATOR</h3>
                             <h6 class="font-weight-normal mb-5">Hallo {{ Auth::user()->name }}
                                 <p>Disini Kamu dapat Atur data RT serta data Akun RT dan RW</p>
-                                <span class="text-primary">Klik button Lihat!</span>
+                                <span class="text-primary">Hati-hati dalam mengatur data!</span>
                             </h6>
                         </div>
                         <div class="col-12 col-xl-4 mt-3">
@@ -67,7 +67,7 @@
                                 <div class="col-md-6 mb-4 stretch-card transparent">
                                     <div class="card card-tale">
                                         <div class="card-body">
-                                            <h3 class="mb-4">Akun Admin</h3>
+                                            <h3 class="mb-4">Akun Pengurus RT</h3>
                                             <p class="fs-30 mb-2">{{ $admin }}</p>
                                             <p>
                                                 <a href="{{ route('operator.manajemen-admin.index') }}">
@@ -80,7 +80,7 @@
                                 <div class="col-md-6 mb-4 stretch-card transparent">
                                     <div class="card card-dark-blue">
                                         <div class="card-body">
-                                            <h3 class="mb-4">Akun Superadmin</h3>
+                                            <h3 class="mb-4">Akun Pengurus RW</h3>
                                             <p class="fs-30 mb-2">{{ $superadmin }}</p>
                                             <p>
                                                 <a href="{{ route('operator.manajemen-superadmin.index') }}">

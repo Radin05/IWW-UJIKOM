@@ -237,24 +237,15 @@
                                                             <label for="kedudukan" class="form-label">Kedudukan</label>
                                                             <select name="kedudukan" id="kedudukan"
                                                                 class="form-control @error('kedudukan') is-invalid @enderror">
-                                                                <option value="Ketua RW"
-                                                                    {{ $data->kedudukan == 'Ketua RW' ? 'selected' : '' }}>
-                                                                    Ketua RW</option>
-                                                                <option value="Wakil Ketua RW"
-                                                                    {{ $data->kedudukan == 'Wakil Ketua RW' ? 'selected' : '' }}>
-                                                                    Wakil Ketua RW</option>
-                                                                <option value="Sekretaris RW"
-                                                                    {{ $data->kedudukan == 'Sekretaris RW' ? 'selected' : '' }}>
-                                                                    Sekretaris RW</option>
-                                                                <option value="Bendahara RW"
-                                                                    {{ $data->kedudukan == 'Bendahara RW' ? 'selected' : '' }}>
-                                                                    Bendahara RW</option>
-                                                                <option value="Humas RW"
-                                                                    {{ $data->kedudukan == 'Humas RW' ? 'selected' : '' }}>
-                                                                    Humas RW</option>
-                                                                <option value="Keamanan RW"
-                                                                    {{ $data->kedudukan == 'Keamanan RW' ? 'selected' : '' }}>
-                                                                    Keamanan RW</option>
+                                                                <option value="">-- Pilih Kedudukan --</option>
+                                                                @foreach ($opsi_kedudukan as $kedudukan)
+                                                                    @if (!in_array($kedudukan, $digunakan))
+                                                                        <option value="{{ $kedudukan }}"
+                                                                            {{ old('kedudukan') == $kedudukan ? 'selected' : '' }}>
+                                                                            {{ $kedudukan }}
+                                                                        </option>
+                                                                    @endif
+                                                                @endforeach
                                                             </select>
                                                             @error('kedudukan')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -334,6 +325,7 @@
                                         $updateLog = $data->activityLog->where('activity', 'update')->last();
                                         $updatepwLog = $data->activityLog->where('activity', 'updatepw')->last();
                                     @endphp
+                                    
                                     <div class="modal fade" id="activityLog-{{ $data->id }}" tabindex="-1"
                                         aria-labelledby="activityLog-{{ $data->id }}" aria-hidden="true">
                                         <div class="modal-dialog">
@@ -345,7 +337,7 @@
 
                                                 <div class="modal-body">
                                                     <div class="mb-3">
-                                                        <label class="form-label">Dibuat/Diubah oleh :
+                                                        <label class="form-label">Dibuat oleh :
                                                             <b>{{ $createLog?->activity ?? 'Tidak Diketahui' }}</b>
                                                             By
                                                             <b>{{ $createLog?->user?->name ?? '-' }}</b>

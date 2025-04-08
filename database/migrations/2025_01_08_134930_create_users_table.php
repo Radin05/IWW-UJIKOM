@@ -28,7 +28,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Tambahkan foreign key dengan benar
-            $table->foreign('no_kk_keluarga')->references('no_kk')->on('keluargas')->onDelete('cascade');
+            $table->foreign('no_kk_keluarga')->references('no_kk')->on('keluargas')->onUpdate('cascade')->onDelete('set null');
             $table->foreign('rt_id')->references('id')->on('rts')->onDelete('cascade');
         });
     }

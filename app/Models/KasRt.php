@@ -27,5 +27,9 @@ class KasRt extends Model
     {
         return $this->belongsTo(PengeluaranKasRt::class, 'pengeluaran_kas_rt_id');
     }
-
+    
+    public function activityLog()
+    {
+        return $this->hasMany(ActivityLog::class, 'target_id', 'id');
+    }
 }

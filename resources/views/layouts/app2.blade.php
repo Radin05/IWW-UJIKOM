@@ -50,7 +50,63 @@
 
 <body class="index-page">
 
+    <header id="header" class="header sticky-top">
+
+        <div class="topbar d-flex align-items-center">
+            <div class="container d-flex justify-content-center justify-content-md-between">
+                <div class="d-none d-md-flex align-items-center">
+                    <i class="bi bi-clock me-1"></i>
+                    <span id="real-time-clock"></span>
+                </div>
+
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-phone me-1"></i> +62 821 1545 2003
+                </div>
+            </div>
+        </div><!-- End Top Bar -->
+
+        @yield('navbar')
+
+    </header>
+
     @yield('content')
+
+
+    <footer id="footer" class="footer light-background">
+
+        <div class="container footer-top">
+            <div class="row gy-4">
+                <div class="col-lg-4 col-md-6 footer-about">
+                    <a href="" class="logo d-flex align-items-center">
+                        <span class="sitename">RR2</span>
+                    </a>
+                    <div class="footer-contact pt-1">
+                        <span>Rancamanyar Regency 2</span>
+                        <p>
+                            Kel. Rancamanyar, Kec. Baleendah, Kab. Bandung, Indonesia RW/20 40375
+                        </p>
+                        <p class="mt-3"><strong>No Telepon:</strong> <span>+62 821 1545 2003</span></p>
+                        <p><strong>Email:</strong> <span>testingwebaja2107@google.com</span></p>
+                    </div>
+                    <div class="social-links d-flex mt-4">
+                        <a href=""><i class="bi bi-twitter-x"></i></a>
+                        <a href=""><i class="bi bi-facebook"></i></a>
+                        <a href=""><i class="bi bi-instagram"></i></a>
+                        <a href=""><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+
+                @yield('footer')
+
+            </div>
+        </div>
+
+        <div class="container copyright text-center mt-4">
+            <p>© <span>Copyright</span> <strong class="px-1 sitename">2025</strong> <span>Created : </span>By Radin AL
+            </p>
+        </div>
+
+    </footer>
 
     <!-- Scroll Top -->
     <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
@@ -69,6 +125,32 @@
 
     <!-- Main JS File -->
     <script src="{{ asset('asset/js/main.js') }}"></script>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const options = {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            };
+            const dateStr = now.toLocaleDateString('id-ID', options);
+            const timeStr = now.toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            document.getElementById('real-time-clock').innerHTML = `${dateStr}, ${timeStr} WIB`;
+        }
+
+        // Perbarui setiap detik
+        setInterval(updateClock, 1000);
+
+        // Jalankan sekali saat pertama kali dimuat
+        updateClock();
+    </script>
 
 </body>
 

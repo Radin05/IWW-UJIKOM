@@ -19,7 +19,8 @@ class PengeluaranKasRw extends Model
 
     public function activityLog()
     {
-        return $this->hasMany(ActivityLog::class, 'target_id', 'id');
+        return $this->hasMany(ActivityLog::class, 'target_id', 'id')
+            ->where('target_table', 'pengeluaran_kas_rws');
     }
 
     public function kegiatan()

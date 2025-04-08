@@ -23,6 +23,11 @@
             background-color: #00008B !important;
             color: white;
         }
+
+        #rt-chart {
+            width: 100% !important;
+            height: 300px !important;
+        }
     </style>
 
     <div class="main-panel mt-4">
@@ -34,7 +39,7 @@
                             <h3 class="font-weight-bold">SELAMAT DATANG DIHALAMAN ADMIN RT</h3>
                             <h6 class="font-weight-normal mb-5">Hallo {{ Auth::user()->name }}
                                 <p>Disini Kamu dapat atur data Warga, Kas RT dan data Kegiatan RT</p>
-                                <span class="text-primary">Klik button Lihat!</span>
+                                <span class="text-primary">Hati-hati dalam mengatur data!</span>
                             </h6>
                         </div>
                         <div class="col-12 col-xl-4 mt-3">
@@ -49,23 +54,56 @@
                     <div class="row">
                         <div class="col-md-6 grid-margin stretch-card">
                             <div class="card tale-bg">
-                                <div class="card-people mt-auto">
-                                    <img src="{{ asset('assets/images/dashboard/people.svg') }}" alt="people">
-                                    <div class="weather-info">
-                                        <div class="d-flex">
-                                            <div>
-                                                <h2 class="mb-0 font-weight-normal"><i
-                                                        class="icon-sun mr-2"></i>31<sup>C</sup></h2>
-                                            </div>
-                                            <div class="ml-2">
-                                                <h4 class="location font-weight-normal">Suhu</h4>
-                                                <h6 class="font-weight-normal">Indonesia</h6>
-                                            </div>
-                                        </div>
+                                <div class="card-people mt-auto text-center">
+                                    <img src="{{ asset('assets/images/dashboard/people.svg') }}" alt="people"
+                                        class="mb-3">
+                                    <h4 class="font-weight-bold">Peraturan Pengurus {{ Auth::user()->rt->nama_RT }}</h4>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <button type="button" class="btn btn-warning mt-2" data-bs-toggle="modal"
+                                        data-bs-target="#aturanPengurusRtModal">
+                                        Lihat Aturan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Aturan Pengurus RT -->
+                        <div class="modal fade" id="aturanPengurusRtModal" tabindex="-1"
+                            aria-labelledby="aturanPengurusRtLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-warning text-white">
+                                        <h5 class="modal-title" id="aturanPengurusRTLabel">Peraturan Pengurus
+                                            {{ Auth::user()->rt->nama_RT }}</h5>
+                                    </div>
+                                    <div class="modal-body text-left">
+                                        <ol>
+                                            <li>Setiap posisi Pengurus RT di RT-nya masing-msaing hanya memiliki
+                                                <strong>satu akun resmi</strong> yang digunakan dalam pengelolaan RT.</li>
+                                            <li>Pengurus RT memiliki wewenang untuk <strong>mengatur kas RT</strong>,
+                                                termasuk:
+                                                <ul>
+                                                    <li>Menambahkan data keluarga baru dan membuatkan akun bagi warga</li>
+                                                    <li>Menerima dan mencatat iuran kas dari warga</li>
+                                                    <li>Menambahkan dana tambahan dari sumber eksternal</li>
+                                                    <li>Mencatat dan mengelola pengeluaran kas RT</li>
+                                                </ul>
+                                            </li>
+                                            <li><strong>Dilarang menambahkan atau mengubah data tanpa alasan yang
+                                                    sah</strong> atau tanpa persetujuan bersama.</li>
+                                            <li>Setiap perubahan data kas harus dilakukan secara <strong>terbuka dan
+                                                    transparan</strong> serta dapat dipertanggungjawabkan.</li>
+                                        </ol>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Tutup</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-md-6 grid-margin transparent">
                             <div class="row">
                                 <div class="col-md-6 mb-4 stretch-card transparent">
@@ -143,322 +181,14 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12 grid-margin stretch-card">
-                            <div class="card position-relative">
+                            <div class="card">
                                 <div class="card-body">
-                                    <h2 class="text-center mb-3">Kegiatan Mendatang</h2>
-                                    @php
-                                        $carbon = \Carbon\Carbon::now('Asia/Jakarta');
-                                        $upcomingKegiatan = $kegiatan->filter(function ($item) use ($carbon) {
-                                            return \Carbon\Carbon::parse($item->tanggal_kegiatan)->between(
-                                                $carbon,
-                                                $carbon->copy()->addDays(7),
-                                            );
-                                        });
-                                    @endphp
-
-                                    @if ($upcomingKegiatan->isEmpty())
-                                        <p class="text-center text-danger">Tidak ada kegiatan dalam 7 hari ke depan.</p>
-                                    @else
-                                        @foreach ($upcomingKegiatan as $data)
-                                            @php
-                                                $status = trim($data->status);
-                                                $bgColor = 'bg-light'; // Default warna
-
-                                                if ($status == 'Rapat') {
-                                                    $bgColor = 'bg-darkyellow'; // Kuning tua
-                                                } elseif ($status == 'Kerja bakti') {
-                                                    $bgColor = 'bg-darkgreen'; // Hijau tua
-                                                } elseif ($status == 'Kegiatan') {
-                                                    $bgColor = 'bg-darkblue'; // Biru tua
-                                                }
-                                            @endphp
-
-                                            <div class="p-3 mb-2 rounded {{ $bgColor }} text-white">
-                                                <h5 class="mb-1">{{ $data->nama_kegiatan }}</h5>
-                                                <p class="mb-1">{!! $data->deskripsi !!}</p>
-                                                <p class="mb-1"><strong>Tanggal:</strong> {{ $data->tanggal_kegiatan }} |
-                                                    <strong>Jam:</strong> {{ $data->jam_kegiatan }}
-                                                </p>
-                                                <h4 class="mb-0"><strong>Status:</strong> {{ $data->status }}</h4>
-                                            </div>
-                                        @endforeach
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 grid-margin stretch-card">
-                            <div class="card position-relative">
-                                <div class="card-body">
-                                    <div id="detailedReports"
-                                        class="carousel slide detailed-report-carousel position-static pt-2"
-                                        data-ride="carousel">
-                                        <div class="carousel-inner">
-                                            <div class="carousel-item active">
-                                                <div class="row">
-                                                    <div
-                                                        class="col-md-12 col-xl-3 d-flex flex-column justify-content-start">
-                                                        <div class="ml-xl-4 mt-3">
-                                                            <p class="card-title">Detailed Reports</p>
-                                                            <h1 class="text-primary">$34040</h1>
-                                                            <h3 class="font-weight-500 mb-xl-4 text-primary">North America
-                                                            </h3>
-                                                            <p class="mb-2 mb-xl-0">The total number of sessions within the
-                                                                date range. It is the period time a user is actively engaged
-                                                                with your website, page or app, etc</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12 col-xl-9">
-                                                        <div class="row">
-                                                            <div class="col-md-6 border-right">
-                                                                <div class="table-responsive mb-3 mb-md-0 mt-3">
-                                                                    <table class="table table-borderless report-table">
-                                                                        <tr>
-                                                                            <td class="text-muted">Illinois</td>
-                                                                            <td class="w-100 px-0">
-                                                                                <div class="progress progress-md mx-4">
-                                                                                    <div class="progress-bar bg-primary"
-                                                                                        role="progressbar"
-                                                                                        style="width: 70%"
-                                                                                        aria-valuenow="70"
-                                                                                        aria-valuemin="0"
-                                                                                        aria-valuemax="100"></div>
-                                                                                </div>
-                                                                            </td>
-                                                                            <td>
-                                                                                <h5 class="font-weight-bold mb-0">713</h5>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td class="text-muted">Washington</td>
-                                                                            <td class="w-100 px-0">
-                                                                                <div class="progress progress-md mx-4">
-                                                                                    <div class="progress-bar bg-warning"
-                                                                                        role="progressbar"
-                                                                                        style="width: 30%"
-                                                                                        aria-valuenow="30"
-                                                                                        aria-valuemin="0"
-                                                                                        aria-valuemax="100"></div>
-                                                                                </div>
-                                                                            </td>
-                                                                            <td>
-                                                                                <h5 class="font-weight-bold mb-0">583</h5>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td class="text-muted">Mississippi</td>
-                                                                            <td class="w-100 px-0">
-                                                                                <div class="progress progress-md mx-4">
-                                                                                    <div class="progress-bar bg-danger"
-                                                                                        role="progressbar"
-                                                                                        style="width: 95%"
-                                                                                        aria-valuenow="95"
-                                                                                        aria-valuemin="0"
-                                                                                        aria-valuemax="100"></div>
-                                                                                </div>
-                                                                            </td>
-                                                                            <td>
-                                                                                <h5 class="font-weight-bold mb-0">924</h5>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td class="text-muted">California</td>
-                                                                            <td class="w-100 px-0">
-                                                                                <div class="progress progress-md mx-4">
-                                                                                    <div class="progress-bar bg-info"
-                                                                                        role="progressbar"
-                                                                                        style="width: 60%"
-                                                                                        aria-valuenow="60"
-                                                                                        aria-valuemin="0"
-                                                                                        aria-valuemax="100"></div>
-                                                                                </div>
-                                                                            </td>
-                                                                            <td>
-                                                                                <h5 class="font-weight-bold mb-0">664</h5>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td class="text-muted">Maryland</td>
-                                                                            <td class="w-100 px-0">
-                                                                                <div class="progress progress-md mx-4">
-                                                                                    <div class="progress-bar bg-primary"
-                                                                                        role="progressbar"
-                                                                                        style="width: 40%"
-                                                                                        aria-valuenow="40"
-                                                                                        aria-valuemin="0"
-                                                                                        aria-valuemax="100"></div>
-                                                                                </div>
-                                                                            </td>
-                                                                            <td>
-                                                                                <h5 class="font-weight-bold mb-0">560</h5>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td class="text-muted">Alaska</td>
-                                                                            <td class="w-100 px-0">
-                                                                                <div class="progress progress-md mx-4">
-                                                                                    <div class="progress-bar bg-danger"
-                                                                                        role="progressbar"
-                                                                                        style="width: 75%"
-                                                                                        aria-valuenow="75"
-                                                                                        aria-valuemin="0"
-                                                                                        aria-valuemax="100"></div>
-                                                                                </div>
-                                                                            </td>
-                                                                            <td>
-                                                                                <h5 class="font-weight-bold mb-0">793</h5>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-6 mt-3">
-                                                                <canvas id="north-america-chart"></canvas>
-                                                                <div id="north-america-legend"></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="carousel-item">
-                                                <div class="row">
-                                                    <div
-                                                        class="col-md-12 col-xl-3 d-flex flex-column justify-content-start">
-                                                        <div class="ml-xl-4 mt-3">
-                                                            <p class="card-title">Detailed Reports</p>
-                                                            <h1 class="text-primary">$34040</h1>
-                                                            <h3 class="font-weight-500 mb-xl-4 text-primary">North America
-                                                            </h3>
-                                                            <p class="mb-2 mb-xl-0">The total number of sessions within the
-                                                                date range. It is the period time a user is actively engaged
-                                                                with your website, page or app, etc</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12 col-xl-9">
-                                                        <div class="row">
-                                                            <div class="col-md-6 border-right">
-                                                                <div class="table-responsive mb-3 mb-md-0 mt-3">
-                                                                    <table class="table table-borderless report-table">
-                                                                        <tr>
-                                                                            <td class="text-muted">Illinois</td>
-                                                                            <td class="w-100 px-0">
-                                                                                <div class="progress progress-md mx-4">
-                                                                                    <div class="progress-bar bg-primary"
-                                                                                        role="progressbar"
-                                                                                        style="width: 70%"
-                                                                                        aria-valuenow="70"
-                                                                                        aria-valuemin="0"
-                                                                                        aria-valuemax="100"></div>
-                                                                                </div>
-                                                                            </td>
-                                                                            <td>
-                                                                                <h5 class="font-weight-bold mb-0">713</h5>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td class="text-muted">Washington</td>
-                                                                            <td class="w-100 px-0">
-                                                                                <div class="progress progress-md mx-4">
-                                                                                    <div class="progress-bar bg-warning"
-                                                                                        role="progressbar"
-                                                                                        style="width: 30%"
-                                                                                        aria-valuenow="30"
-                                                                                        aria-valuemin="0"
-                                                                                        aria-valuemax="100"></div>
-                                                                                </div>
-                                                                            </td>
-                                                                            <td>
-                                                                                <h5 class="font-weight-bold mb-0">583</h5>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td class="text-muted">Mississippi</td>
-                                                                            <td class="w-100 px-0">
-                                                                                <div class="progress progress-md mx-4">
-                                                                                    <div class="progress-bar bg-danger"
-                                                                                        role="progressbar"
-                                                                                        style="width: 95%"
-                                                                                        aria-valuenow="95"
-                                                                                        aria-valuemin="0"
-                                                                                        aria-valuemax="100"></div>
-                                                                                </div>
-                                                                            </td>
-                                                                            <td>
-                                                                                <h5 class="font-weight-bold mb-0">924</h5>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td class="text-muted">California</td>
-                                                                            <td class="w-100 px-0">
-                                                                                <div class="progress progress-md mx-4">
-                                                                                    <div class="progress-bar bg-info"
-                                                                                        role="progressbar"
-                                                                                        style="width: 60%"
-                                                                                        aria-valuenow="60"
-                                                                                        aria-valuemin="0"
-                                                                                        aria-valuemax="100"></div>
-                                                                                </div>
-                                                                            </td>
-                                                                            <td>
-                                                                                <h5 class="font-weight-bold mb-0">664</h5>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td class="text-muted">Maryland</td>
-                                                                            <td class="w-100 px-0">
-                                                                                <div class="progress progress-md mx-4">
-                                                                                    <div class="progress-bar bg-primary"
-                                                                                        role="progressbar"
-                                                                                        style="width: 40%"
-                                                                                        aria-valuenow="40"
-                                                                                        aria-valuemin="0"
-                                                                                        aria-valuemax="100"></div>
-                                                                                </div>
-                                                                            </td>
-                                                                            <td>
-                                                                                <h5 class="font-weight-bold mb-0">560</h5>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td class="text-muted">Alaska</td>
-                                                                            <td class="w-100 px-0">
-                                                                                <div class="progress progress-md mx-4">
-                                                                                    <div class="progress-bar bg-danger"
-                                                                                        role="progressbar"
-                                                                                        style="width: 75%"
-                                                                                        aria-valuenow="75"
-                                                                                        aria-valuemin="0"
-                                                                                        aria-valuemax="100"></div>
-                                                                                </div>
-                                                                            </td>
-                                                                            <td>
-                                                                                <h5 class="font-weight-bold mb-0">793</h5>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-6 mt-3">
-                                                                <canvas id="south-america-chart"></canvas>
-                                                                <div id="south-america-legend"></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <a class="carousel-control-prev" href="#detailedReports" role="button"
-                                            data-slide="prev">
-                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                            <span class="sr-only">Previous</span>
-                                        </a>
-                                        <a class="carousel-control-next" href="#detailedReports" role="button"
-                                            data-slide="next">
-                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                            <span class="sr-only">Next</span>
-                                        </a>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-title">Laporan Pengeluaran 5 Bulan Terakhir</p>
                                     </div>
+                                    <p class="font-weight-500">Grafik pengeluaran selama 5 bulan sebelum bulan ini.</p>
+                                    <div id="sales-epik" class="chartjs-legend mt-4 mb-2"></div>
+                                    <canvas id="rt-chart"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -467,5 +197,22 @@
             </div>
         </div>
     </div>
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        console.log("Labels: ", window.chartLabelsRT);
+        console.log("Kas Data: ", window.chartDataKasRT);
+        console.log("Pengeluaran Data: ", window.chartDataPengeluaranRT);
+    </script>
+
+    <script>
+        window.chartLabelsRT = @json($labels);
+        window.chartDataKasRT = @json($chartKasRT);
+        window.chartDataPengeluaranRT = @json($dataPengeluaran);
+    </script>
+
 
 @endsection

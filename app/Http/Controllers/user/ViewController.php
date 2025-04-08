@@ -9,6 +9,8 @@ use App\Models\Keluarga;
 use App\Models\PengeluaranKasRt;
 use App\Models\PengeluaranKasRw;
 use App\Models\RT;
+use App\Models\UangTambahan;
+use App\Models\UangTambahanRT;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -55,6 +57,9 @@ class ViewController extends Controller
         // Ambil kas RT untuk setiap RT
         $kasRts = KasRt::with('rt')->get();
 
+        $uangTambahans = UangTambahan::orderBy('created_at', 'desc')
+            ->paginate(7);
+
         $pengeluarans = PengeluaranKasRt::with('kegiatan')
             ->whereYear('tgl_pengeluaran', $year)
             ->whereMonth('tgl_pengeluaran', $month)
@@ -100,18 +105,63 @@ class ViewController extends Controller
 
         $tgl_pembaruan = $tgl_pembaruan ? Carbon::parse($tgl_pembaruan)->format('d-m-Y') : 'Belum diperbarui';
 
-        return view('user.iuran', compact('rts', 'pengeluarans', 'kasRts', 'kasRw', 'jumlah_kas_rw', 'pengeluaranRw', 'year', 'month', 'tgl_pembaruan'));
+        return view('user.iuran', compact('rts', 'pengeluarans', 'kasRts', 'kasRw', 'jumlah_kas_rw', 'pengeluaranRw', 'uangTambahans', 'year', 'month', 'tgl_pembaruan'));
     }
 
-    public function profil()
+    public function profil(Request $request)
     {
-        // Ambil user yang sedang login
-        $user = Auth::user();
-
-        // Ambil data keluarga berdasarkan no_kk pengguna
+        $user     = Auth::user();
         $keluarga = Keluarga::where('no_kk', $user->no_kk_keluarga)->first();
 
-        return view('user.profil', compact('user', 'keluarga'));
+        $uangTambahans = UangTambahanRT::orderBy('created_at', 'desc')->paginate(7);
+
+        $month = (int) $request->input('month', now()->month);
+        $year  = (int) $request->input('year', now()->year);
+
+        $rt_id = Keluarga::where('no_kk', $user->no_kk_keluarga)->value('rt_id') ?? null;
+
+        // Ambil pengeluaran RT berdasarkan bulan & tahun
+        $pengeluaranRt = PengeluaranKasRt::with('kegiatan')
+            ->where('rt_id', $rt_id)
+            ->whereYear('tgl_pengeluaran', $year)
+            ->whereMonth('tgl_pengeluaran', $month)
+            ->orderBy('tgl_pengeluaran', 'asc')
+            ->get();
+
+        // Uang tambahan eksternal RT
+        $uangTambahansRt = UangTambahanRT::where('rt_id', $rt_id)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->orderBy('created_at', 'desc')
+            ->paginate(7);
+
+        $kasRt = KasRt::where('rt_id', $rt_id)->latest('updated_at')->first();
+
+        $jumlah_kas_rt = KasRt::where('rt_id', $rt_id)
+            ->whereYear('updated_at', '<=', $year)
+            ->where(function ($query) use ($year, $month) {
+                $query->whereYear('updated_at', '<', $year)
+                    ->orWhere(function ($subquery) use ($month, $year) {
+                        $subquery->whereYear('updated_at', $year)
+                            ->whereMonth('updated_at', '<=', $month);
+                    });
+            })
+            ->sum('jumlah_kas_rt');
+
+        $tgl_pembaruan = $kasRt ? $kasRt->updated_at->translatedFormat('d F Y H:i:s') : '-';
+
+        return view('user.profil', compact(
+            'user',
+            'keluarga',
+            'kasRt',
+            'jumlah_kas_rt',
+            'tgl_pembaruan',
+            'pengeluaranRt',
+            'uangTambahansRt',
+            'month',
+            'year',
+            'uangTambahans'
+        ));
     }
 
     public function updateProfile(Request $request)

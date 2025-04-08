@@ -77,7 +77,8 @@
                                     <label for="tanggal_kegiatan" class="form-label">Tanggal Kegiatan</label>
                                     <input type="date"
                                         class="form-control @error('tanggal_kegiatan') is-invalid @enderror"
-                                        id="tanggal_kegiatan" name="tanggal_kegiatan" value="{{ old('tanggal_kegiatan') }}">
+                                        id="tanggal_kegiatan" name="tanggal_kegiatan"
+                                        value="{{ old('tanggal_kegiatan') }}">
                                     @error('tanggal_kegiatan')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -85,8 +86,7 @@
 
                                 <div class="form-group mb-3">
                                     <label for="jam_kegiatan" class="form-label">Jam Kegiatan</label>
-                                    <input type="time"
-                                        class="form-control @error('jam_kegiatan') is-invalid @enderror"
+                                    <input type="time" class="form-control @error('jam_kegiatan') is-invalid @enderror"
                                         id="jam_kegiatan" name="jam_kegiatan" value="{{ old('jam_kegiatan') }}">
                                     @error('jam_kegiatan')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -112,6 +112,7 @@
                                             <th>Nama Kegiatan</th>
                                             <th>Deskripsi</th>
                                             <th>Tanggal</th>
+                                            <th>Jam</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -131,25 +132,28 @@
                                                         </button>
                                                         <div class="dropdown-menu bg-info"
                                                             aria-labelledby="dropdownMenuIconButton3">
+
                                                             <button class="dropdown-item" data-bs-toggle="modal"
                                                                 data-bs-target="#editKegiatanModal-{{ $data->id }}">Edit</button>
-
-                                                            {{-- <div class="dropdown-divider"></div>
-
-                                                            <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#commentModal-{{ $data->id }}">
-                                                                Komentar
-                                                            </button> --}}
 
                                                             <div class="dropdown-divider"></div>
 
                                                             <form
                                                                 action="{{ route('superadmin.kegiatan-rw.destroy', $data->id) }}"
-                                                                method="POST" class="d-inline">
+                                                                method="POST" class="d-inline" data-confirm="true"
+                                                                data-title="Hapus Kegiatan?"
+                                                                data-text="Yakin ingin menghapus Kegiatan ini?">
                                                                 @csrf
                                                                 @method('DELETE')
-                                                                <button type="submit" class="dropdown-item"
-                                                                    onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                                                                <button type="submit" class="dropdown-item">Hapus</button>
                                                             </form>
+
+                                                            <div class="dropdown-divider"></div>
+
+                                                            <button class="dropdown-item" data-bs-toggle="modal"
+                                                                data-bs-target="#activityLog-{{ $data->id }}">
+                                                                Aktivitas
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -159,78 +163,6 @@
                                 </table>
 
                                 @foreach ($kegiatan as $data)
-                                    {{-- <div class="modal fade" id="commentModal-{{ $data->id }}" tabindex="-1"
-                                        aria-labelledby="commentModalLabel-{{ $data->id }}" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content bg-dark">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="commentModalLabel-{{ $data->id }}">
-                                                        Komentar Kegiatan RW</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close">x</button>
-                                                </div>
-                                                <div class="modal-body">
-
-                                                    <!-- Daftar Komentar -->
-                                                    <ul class="listKomentar" id="listKomentar-{{ $data->id }}">
-                                                        @foreach ($komentars->where('kegiatan_id', $data->id) as $komentar)
-                                                            <li id="komentar-{{ $komentar->id }}">
-                                                                <strong>{{ $komentar->user->name }}</strong>:
-                                                                <span class="konten">{{ $komentar->konten }}</span>
-
-                                                                @if ($komentar->user_id === auth()->id())
-                                                                    <button class="btn btn-warning btn-sm edit"
-                                                                        data-id="{{ $komentar->id }}"
-                                                                        data-konten="{{ $komentar->konten }}">
-                                                                        Edit
-                                                                    </button>
-                                                                    <button class="btn btn-danger btn-sm delete"
-                                                                        data-id="{{ $komentar->id }}">
-                                                                        Hapus
-                                                                    </button>
-                                                                @endif
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-
-                                                    <hr>
-
-                                                    <!-- Form Tambah Komentar -->
-                                                    <form class="formTambahKomentar"
-                                                        data-kegiatan-id="{{ $data->id }}">
-                                                        <div class="mb-3">
-                                                            <textarea class="form-control konten" placeholder="Tulis komentar..." required></textarea>
-                                                        </div>
-                                                        <button type="submit" class="btn btn-primary">Kirim</button>
-                                                    </form>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="modal fade" id="modalEdit" tabindex="-1"
-                                        aria-labelledby="modalEditLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="modalEditLabel">Edit Komentar</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <input type="hidden" id="editKomentarId">
-                                                    <textarea id="editKonten" class="form-control"></textarea>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-bs-dismiss="modal">Batal</button>
-                                                    <button id="btnUpdateKomentar" class="btn btn-success">Update</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> --}}
-
                                     <div class="modal fade" id="editKegiatanModal-{{ $data->id }}" tabindex="-1"
                                         aria-labelledby="editKegiatanModal-{{ $data->id }}" aria-hidden="true">
                                         <div class="modal-dialog">
@@ -302,6 +234,64 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    @php
+                                        $createLog = $data->activityLog->where('activity', 'create')->first();
+                                        $updateLog = $data->activityLog->where('activity', 'update')->last();
+                                    @endphp
+
+                                    <div class="modal fade" id="activityLog-{{ $data->id }}" tabindex="-1"
+                                        aria-labelledby="activityLogLabel-{{ $data->id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content bg-dark text-white">
+                                                <div class="modal-header border-0">
+                                                    <h5 class="modal-title">Aktivitas CRUD - {{ $data->nama_kegiatan }}
+                                                    </h5>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    <!-- Create Activity -->
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Dibuat oleh:</label>
+                                                        <b>{{ $createLog?->user?->name ?? 'Tidak Diketahui' }}</b>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Waktu Aktivitas:</label>
+                                                        <small>
+                                                            {{ $createLog?->performed_at ? \Carbon\Carbon::parse($createLog->performed_at)->translatedFormat('d F Y H:i:s') : '-' }}
+                                                        </small>
+                                                    </div>
+
+                                                    <hr class="border-light">
+
+                                                    <!-- Update Activity -->
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Diubah oleh:</label>
+                                                        <b>{{ $updateLog?->user?->name ?? '-' }}</b>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Deskripsi Perubahan:</label>
+                                                        <small>
+                                                            <ul>
+                                                                <li>{!! $updateLog?->description ?? 'Belum ada perubahan' !!}</li>
+                                                            </ul>
+                                                        </small>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Waktu Aktivitas:</label>
+                                                        <small>
+                                                            {{ $updateLog?->performed_at ? \Carbon\Carbon::parse($updateLog->performed_at)->translatedFormat('d F Y H:i:s') : '-' }}
+                                                        </small>
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal-footer border-0">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Tutup</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endforeach
 
                             </div>
@@ -349,6 +339,30 @@
                         editor.getBody().style.height = (editor.getBody().scrollHeight) + 'px';
                     });
                 },
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll("form[data-confirm]").forEach(function(form) {
+                form.addEventListener("submit", function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: form.dataset.title || "Yakin ingin menghapus?",
+                        text: form.dataset.text || "Data akan dihapus secara permanen!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: "Ya, Hapus!",
+                        cancelButtonText: "Batal",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
             });
         });
     </script>

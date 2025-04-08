@@ -10,7 +10,7 @@
                             <div class="brand-logo text-center">
                                 <img src="{{ asset('assets/images/RR2.png') }}" class="img-fluid" style="max-width: 90px;" alt="logo">
                             </div>
-                            <h4 class="text-center">Sampurasun! Warga RR2</h4>
+                            <h4 class="text-center">Sampurasun Warga RR2!</h4>
                             <h6 class="font-weight-light text-center">Login untuk melanjutkan.</h6>
                             <form method="POST" action="{{ route('login') }}" class="pt-3">
                                 @csrf

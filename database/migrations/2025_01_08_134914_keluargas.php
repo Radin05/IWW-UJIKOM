@@ -14,14 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('keluargas', function (Blueprint $table) {
-            $table->string('no_kk')->primary();
+            $table->id();
+            $table->string('no_kk')->unique();
             $table->string('nama_keluarga');
             $table->string('alamat');
             $table->string('no_telp');
             $table->unsignedBigInteger('rt_id')->nullable();
             $table->timestamps();
 
-            $table->foreign('rt_id')->references('id')->on('rts')->onDelete('cascade');
+            $table->foreign('rt_id')->references('id')->on('rts')->onUpdate('cascade')->onDelete('set null');
         });
     }
 

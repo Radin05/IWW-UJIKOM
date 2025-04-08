@@ -21,7 +21,6 @@
 
     @yield('css')
 
-
     @php
         use Carbon\Carbon;
     @endphp
@@ -117,7 +116,7 @@
                                 </a>
                             </li>
                         </ul>
-                    @elseif (Auth::user()->role === 'superadmin')
+                        @elseif (Auth::user()->role === 'superadmin')
                         <ul class="nav">
                             <li class="nav-item ahay {{ request()->routeIs('superadmin.index') ? 'active' : '' }}">
                                 <a class="nav-link uhuy" href="{{ route('superadmin.index') }}">
@@ -127,23 +126,17 @@
                             </li>
                             <li class="nav-item ahay {{ request()->routeIs('superadmin.kas.index') ? 'active' : '' }}">
                                 <a class="nav-link uhuy" href="{{ route('superadmin.kas.index') }}">
-                                    <i class="icon-grid menu-icon"></i>
+                                    <i class="icon-columns menu-icon"></i>
                                     <span class="menu-title">Kas RW</span>
                                 </a>
                             </li>
                             <li
                                 class="nav-item ahay {{ request()->routeIs('superadmin.kegiatan-rw.index') ? 'active' : '' }}">
                                 <a class="nav-link uhuy" href="{{ route('superadmin.kegiatan-rw.index') }}">
-                                    <i class="icon-paper menu-icon"></i>
+                                    <i class="icon-layout menu-icon"></i>
                                     <span class="menu-title">Kegiatan RW-20</span>
                                 </a>
                             </li>
-                            {{-- <li class="nav-item ahay {{ request()->routeIs('superadmin.komentar.index') ? 'active' : '' }}">
-                                <a class="nav-link uhuy" href="{{ route('superadmin.komentar.index') }}">
-                                    <i class="icon-paper menu-icon"></i>
-                                    <span class="menu-title">Komentar</span>
-                                </a>
-                            </li> --}}
                             <li class="nav-item ahay {{ request()->routeIs('superadmin.aktivitas') ? 'active' : '' }}">
                                 <a class="nav-link uhuy" href="{{ route('superadmin.aktivitas') }}">
                                     <i class="icon-paper menu-icon"></i>
@@ -161,7 +154,7 @@
                                 <li class="nav-item ahay {{ request()->routeIs('admin.warga.index') ? 'active' : '' }}">
                                     <a class="nav-link uhuy"
                                         href="{{ route('admin.warga.index', ['nama_RT' => $nama_RT]) }}">
-                                        <i class="icon-paper menu-icon"></i>
+                                        <i class="icon-head menu-icon"></i>
                                         <span class="menu-title">Warga dan Akun</span>
                                     </a>
                                 </li>
@@ -170,7 +163,7 @@
                                     <a class="nav-link uhuy" data-toggle="collapse" href="#ui-basic"
                                         aria-expanded="{{ request()->routeIs('admin.pembayaran.index') || request()->routeIs('admin.kas.index') ? 'true' : 'false' }}"
                                         aria-controls="ui-basic">
-                                        <i class="icon-head menu-icon"></i>
+                                        <i class="icon-columns menu-icon"></i>
                                         <span class="menu-title">Keuangan</span>
                                         <i class="menu-arrow"></i>
                                     </a>
@@ -198,7 +191,7 @@
                                     class="nav-item ahay {{ request()->routeIs('admin.kegiatan.index') ? 'active' : '' }}">
                                     <a class="nav-link uhuy"
                                         href="{{ route('admin.kegiatan.index', ['nama_RT' => $nama_RT]) }}">
-                                        <i class="icon-paper menu-icon"></i>
+                                        <i class="icon-layout menu-icon"></i>
                                         <span class="menu-title">Kegiatan</span>
                                     </a>
                                 </li>
@@ -224,6 +217,7 @@
     <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
 
     <script src="{{ asset('assets/vendors/chart.js/Chart.min.js') }}"></script>
+    <script src="{{ asset('assets/js/dataTables.select.min.js') }}"></script>
 
     <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
     <script src="{{ asset('assets/js/hoverable-collapse.js') }}"></script>

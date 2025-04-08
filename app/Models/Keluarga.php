@@ -7,12 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Keluarga extends Model
 {
-    use HasFactory;
-
     protected $table = 'keluargas';
-    protected $primaryKey = 'no_kk';
-    public $incrementing = false;
-    protected $keyType = 'string';
 
     protected $fillable = ['no_kk', 'nama_keluarga', 'alamat', 'no_telp', 'rt_id'];
 
@@ -23,17 +18,17 @@ class Keluarga extends Model
 
     public function no_kk()
     {
-        return $this->hasOne(User::class);
+        return $this->hasOne(User::class, 'no_kk_keluarga', 'no_kk');
     }
 
     public function bayar()
     {
-        return $this->hasMany(Pembayaran::class);
+        return $this->hasMany(Pembayaran::class, 'no_kk_keluarga', 'no_kk');
     }
 
     public function activityLog()
     {
-        return $this->hasMany(ActivityLog::class, 'target_id', 'no_kk');
+        return $this->hasMany(ActivityLog::class, 'target_id', 'id');
     }
 
 }

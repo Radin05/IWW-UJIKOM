@@ -15,4 +15,9 @@ class UangTambahan extends Model
     {
         return $this->hasOne(KasRw::class, 'uang_tambahan_kas_id');
     }
+
+    public function activityLog()
+    {
+        return $this->hasMany(ActivityLog::class, 'target_id', 'id');
+    }
 }

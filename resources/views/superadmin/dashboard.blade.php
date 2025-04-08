@@ -23,6 +23,11 @@
             background-color: #00008B !important;
             color: white;
         }
+
+        #sales-chart-custom {
+            width: 100% !important;
+            height: 300px !important;
+        }
     </style>
 
     <div class="main-panel mt-4">
@@ -34,14 +39,18 @@
                             <h3 class="font-weight-bold">SELAMAT DATANG DIHALAMAN ADMIN RW</h3>
                             <h6 class="font-weight-normal mb-5">Hallo {{ Auth::user()->name }}
                                 <p>Disini Kamu dapat atur data Kas RW dan data Kegiatan RW</p>
-                                <span class="text-primary">Klik button Lihat!</span>
+                                <span class="text-primary">Hati-hati dalam mengatur data!</span>
                             </h6>
                         </div>
                         <div class="col-12 col-xl-4 mt-3">
                             <div class="justify-content-end d-flex">
                                 <div class="dropdown flex-md-grow-1 flex-xl-grow-0">
-                                    <i class="mdi mdi-calendar"></i>Today <small> {{ $carbon->format('d-m-Y') }}
-                                    </small>
+                                    <div class="card">
+                                        <div class="card-body bg-light">
+                                            <i class="mdi mdi-calendar"></i>Hari ini :<small> {{ $carbon->format('d-m-Y') }}
+                                            </small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -49,24 +58,53 @@
                     <div class="row">
                         <div class="col-md-6 grid-margin stretch-card">
                             <div class="card tale-bg">
-                                <div class="card-people mt-auto">
-                                    <img src="{{ asset('assets/images/dashboard/people.svg') }}" alt="people">
-                                    <div class="weather-info">
-                                        <div class="d-flex">
-                                            <div>
-                                                <h2 class="mb-0 font-weight-normal"><i
-                                                        class="icon-sun mr-2"></i>32<sup>C</sup>
-                                                </h2>
-                                            </div>
-                                            <div class="ml-2">
-                                                <h4 class="location font-weight-normal">Suhu</h4>
-                                                <h6 class="font-weight-normal">Indonesia</h6>
-                                            </div>
-                                        </div>
+                                <div class="card-people mt-auto text-center">
+                                    <img src="{{ asset('assets/images/dashboard/people.svg') }}" alt="people"
+                                        class="mb-3">
+                                    <h4 class="font-weight-bold">Peraturan Pengurus RW</h4>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <button type="button" class="btn btn-warning mt-2" data-bs-toggle="modal"
+                                        data-bs-target="#aturanPengurusRwModal">
+                                        Lihat Aturan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Aturan Pengurus RW -->
+                        <div class="modal fade" id="aturanPengurusRwModal" tabindex="-1"
+                            aria-labelledby="aturanPengurusRwLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-warning text-white">
+                                        <h5 class="modal-title" id="aturanPengurusRwLabel">Peraturan Pengurus RW</h5>
+                                    </div>
+                                    <div class="modal-body text-left">
+                                        <ol>
+                                            <li>Setiap posisi Pengurus RW hanya memiliki <strong>satu akun resmi</strong>
+                                                yang digunakan.</li>
+                                            <li>Pengurus RW memiliki wewenang untuk <strong>mengatur kas RW</strong>,
+                                                termasuk:
+                                                <ul>
+                                                    <li>Menambahkan dana tambahan dari sumber eksternal</li>
+                                                    <li>Mencatat semua pengeluaran kas RW</li>
+                                                </ul>
+                                            </li>
+                                            <li><strong>Dilarang menambahkan data secara sembarangan</strong> tanpa dasar
+                                                yang jelas atau tanpa persetujuan bersama.</li>
+                                            <li>Setiap perubahan data kas harus dilakukan secara <strong>transparan</strong>
+                                                dan dapat dipertanggungjawabkan.</li>
+                                        </ol>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Tutup</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-md-6 grid-margin transparent">
                             <div class="row">
                                 <div class="col-md-6 transparent">
@@ -123,53 +161,6 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12 grid-margin stretch-card">
-                            <div class="card position-relative">
-                                <div class="card-body">
-                                    <h2 class="text-center mb-3">Kegiatan Mendatang</h2>
-                                    @php
-                                        $carbon = \Carbon\Carbon::now('Asia/Jakarta');
-                                        $upcomingKegiatan = $kegiatan->filter(function ($item) use ($carbon) {
-                                            return \Carbon\Carbon::parse($item->tanggal_kegiatan)->between(
-                                                $carbon,
-                                                $carbon->copy()->addDays(7),
-                                            );
-                                        });
-                                    @endphp
-
-                                    @if ($upcomingKegiatan->isEmpty())
-                                        <p class="text-center text-danger">Tidak ada kegiatan dalam 7 hari ke depan.</p>
-                                    @else
-                                        @foreach ($upcomingKegiatan as $data)
-                                            @php
-                                                $status = trim($data->status);
-                                                $bgColor = 'bg-light'; // Default warna
-
-                                                if ($status == 'Rapat') {
-                                                    $bgColor = 'bg-darkyellow'; // Kuning tua
-                                                } elseif ($status == 'Kerja bakti') {
-                                                    $bgColor = 'bg-darkgreen'; // Hijau tua
-                                                } elseif ($status == 'Kegiatan') {
-                                                    $bgColor = 'bg-darkblue'; // Biru tua
-                                                }
-                                            @endphp
-
-                                            <div class="p-3 mb-2 rounded {{ $bgColor }} text-white">
-                                                <h5 class="mb-1">{{ $data->nama_kegiatan }}</h5>
-                                                <p class="mb-1">{!! $data->deskripsi !!}</p>
-                                                <p class="mb-1"><strong>Tanggal:</strong> {{ $data->tanggal_kegiatan }} |
-                                                    <strong>Jam:</strong> {{ $data->jam_kegiatan }}
-                                                </p>
-                                                <h4 class="mb-0 text-warning"><strong>Status:</strong> {{ $data->status }}
-                                                </h4>
-                                            </div>
-                                        @endforeach
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 grid-margin stretch-card">
                             <div class="card">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between">
@@ -188,10 +179,14 @@
     </div>
 
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <!-- Variabel global untuk data chart -->
     <script>
         window.chartLabels = @json($labels);
-        window.chartData = @json($data);
+        window.chartDataKasRW = @json($chartKasRW);
+        window.chartDataPengeluaranRW = @json($dataPengeluaran);
     </script>
 
 @endsection

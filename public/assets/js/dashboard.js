@@ -179,167 +179,157 @@
     }
     $(document).ready(function() {
         if ($("#sales-chart-custom").length) {
-          // Ambil data global atau fallback
-          var labels = window.chartLabels || ["Jan", "Feb", "Mar", "Apr", "May"];
-          var expensesData = window.chartData || [480, 230, 470, 210, 330];
+            var labels = window.chartLabels || ["Jan", "Feb", "Mar", "Apr", "May"];
+            var kasData = window.chartDataKasRW || [0, 0, 0, 0, 0];
+            var pengeluaranData = window.chartDataPengeluaranRW || [0, 0, 0, 0, 0];
 
-          // Hitung nilai min & max
-          var minValue = Math.min(...expensesData);
-          var maxValue = Math.max(...expensesData);
+            // Debugging untuk melihat data
+            console.log("Labels:", labels);
+            console.log("Kas Data:", kasData);
+            console.log("Pengeluaran Data:", pengeluaranData);
 
-          var SalesChartCanvas = $("#sales-chart-custom").get(0).getContext("2d");
-          var SalesChart = new Chart(SalesChartCanvas, {
-            type: 'bar',
-            data: {
-              labels: labels,
-              datasets: [{
-                label: 'Pengeluaran',
-                data: expensesData,
-                backgroundColor: '#4B49AC'
-              }]
-            },
-            options: {
-              cornerRadius: 5,
-              responsive: true,
-              maintainAspectRatio: true,
-              layout: {
-                padding: {
-                  left: 0,
-                  right: 0,
-                  top: 20,
-                  bottom: 0
-                }
-              },
-              scales: {
-                yAxes: [{
-                  display: true,
-                  gridLines: {
-                    display: true,
-                    drawBorder: false,
-                    color: "#F2F2F2"
-                  },
-                  ticks: {
-                    // Mulai dari nilai pengeluaran terkecil
-                    min: minValue,
-                    // Batas atas sesuai nilai terbesar (tanpa margin)
-                    max: maxValue,
-                    // Format ke Rupiah
-                    callback: function(value) {
-                      return 'Rp ' + value;
+            var SalesChartCanvas = $("#sales-chart-custom").get(0).getContext("2d");
+            var SalesChart = new Chart(SalesChartCanvas, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Saldo Kas RW',
+                            data: kasData,
+                            backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Pengeluaran Kas RW',
+                            data: pengeluaranData,
+                            backgroundColor: 'rgba(255, 99, 132, 0.8)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
+                                },
+                                fontColor: "#6C7383"
+                            },
+                            grid: {
+                                color: "#F2F2F2"
+                            }
+                        },
+                        x: {
+                            stacked: false,
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                fontColor: "#6C7383"
+                            }
+                        }
                     },
-                    autoSkip: true,
-                    maxTicksLimit: 10,
-                    fontColor: "#6C7383"
-                  }
-                }],
-                xAxes: [{
-                  stacked: false,
-                  ticks: {
-                    beginAtZero: true,
-                    fontColor: "#6C7383"
-                  },
-                  gridLines: {
-                    color: "rgba(0, 0, 0, 0)",
-                    display: false
-                  },
-                  barPercentage: 1
-                }]
-              },
-              legend: {
-                display: false
-              },
-              elements: {
-                point: {
-                  radius: 0
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    }
                 }
-              }
-            }
-          });
+            });
 
-          if (document.getElementById('sales-legend')) {
-            document.getElementById('sales-legend').innerHTML = SalesChart.generateLegend();
-          }
+            if (document.getElementById('sales-legend')) {
+                document.getElementById('sales-legend').innerHTML = SalesChart.generateLegend();
+            }
+        }
+    });
+
+    $(document).ready(function() {
+        if ($("#rt-chart").length) {
+            var labels = window.chartLabelsRT || ["Jan", "Feb", "Mar", "Apr", "May"];
+            var kasData = window.chartDataKasRT || [0, 0, 0, 0, 0];
+            var pengeluaranData = window.chartDataPengeluaranRT || [0, 0, 0, 0, 0];
+
+            // Debugging untuk memastikan data tersedia
+            console.log("Labels: ", labels);
+            console.log("Kas Data: ", kasData);
+            console.log("Pengeluaran Data: ", pengeluaranData);
+
+            if (kasData.every(v => v === 0) && pengeluaranData.every(v => v === 0)) {
+                console.warn("Data kas RT dan pengeluaran kosong.");
+                return;
+            }
+
+            var ctx = $("#rt-chart").get(0).getContext("2d");
+            var SalesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Pemasukan Kas',
+                            data: kasData,
+                            backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Pengeluaran Kas',
+                            data: pengeluaranData,
+                            backgroundColor: 'rgba(255, 99, 132, 0.8)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
+                                },
+                                fontColor: "#6C7383"
+                            },
+                            grid: {
+                                color: "#F2F2F2"
+                            }
+                        },
+                        x: {
+                            stacked: false, // Pastikan stacked false agar kedua batang muncul
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                fontColor: "#6C7383"
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    }
+                }
+            });
+
+            if (document.getElementById('sales-epik')) {
+                document.getElementById('sales-epik').innerHTML = SalesChart.generateLegend();
+            }
         }
     });
 
 
 
-
-    if ($("#sales-chart-dark").length) {
-      var SalesChartCanvas = $("#sales-chart-dark").get(0).getContext("2d");
-      var SalesChart = new Chart(SalesChartCanvas, {
-        type: 'bar',
-        data: {
-          labels: ["Jan", "Feb", "Mar", "Apr", "May"],
-          datasets: [{
-              label: 'Offline Sales',
-              data: [480, 230, 470, 210, 330],
-              backgroundColor: '#98BDFF'
-            },
-            {
-              label: 'Online Sales',
-              data: [400, 340, 550, 480, 170],
-              backgroundColor: '#4B49AC'
-            }
-          ]
-        },
-        options: {
-          cornerRadius: 5,
-          responsive: true,
-          maintainAspectRatio: true,
-          layout: {
-            padding: {
-              left: 0,
-              right: 0,
-              top: 20,
-              bottom: 0
-            }
-          },
-          scales: {
-            yAxes: [{
-              display: true,
-              gridLines: {
-                display: true,
-                drawBorder: false,
-                color: "#575757"
-              },
-              ticks: {
-                display: true,
-                min: 0,
-                max: 500,
-                callback: function(value, index, values) {
-                  return  value + '$' ;
-                },
-                autoSkip: true,
-                maxTicksLimit: 10,
-                fontColor:"#F0F0F0"
-              }
-            }],
-            xAxes: [{
-              stacked: false,
-              ticks: {
-                beginAtZero: true,
-                fontColor: "#F0F0F0"
-              },
-              gridLines: {
-                color: "#575757",
-                display: false
-              },
-              barPercentage: 1
-            }]
-          },
-          legend: {
-            display: false
-          },
-          elements: {
-            point: {
-              radius: 0
-            }
-          }
-        },
-      });
-      document.getElementById('sales-legend').innerHTML = SalesChart.generateLegend();
-    }
     if ($("#north-america-chart").length) {
       var areaData = {
         labels: ["Jan", "Feb", "Mar"],

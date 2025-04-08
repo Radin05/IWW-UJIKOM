@@ -9,9 +9,6 @@ class Aktivitas extends Controller
     public function index()
     {
         $activityLogs = ActivityLog::with('user')
-            ->whereHas('user', function ($query) {
-                $query->where('role', 'operator');
-            })
             ->latest()
             ->paginate(10);
 
